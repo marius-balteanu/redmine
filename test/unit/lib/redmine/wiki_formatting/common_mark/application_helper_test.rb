@@ -61,8 +61,9 @@ class Redmine::WikiFormatting::CommonMark::ApplicationHelperTest < Redmine::Help
       end
     end
 
-    def test_attached_image_alt_attribute_with_madkrown
+    def test_attached_image_alt_attribute_with_markdown
       attachments = Attachment.all
+
       with_settings text_formatting: 'common_mark' do
         # When alt text is set
         assert_match %r[<img src=".+?" alt="alt text" loading=".+?">],

@@ -1,17 +1,88 @@
-name: "Ruby on Rails CI"
+name: "Redmine CI"
 on:
   push:
 
 jobs:
   lint:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install Ruby and gems
-        uses: ruby/setup-ruby@55283cc23133118229fd3f97f9336ee23a179fcf # v1.146.0
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.2
           bundler-cache: true
-      - name: Lint Ruby files
+
+      - name: Lint code for consistent style
         run: bundle exec rubocop --parallel
+
+  tests:
+    name: ${{ github.workflow }} postgresql ruby-${{ matrix.ruby }}
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        ruby: ['3.1', '3.2', '3.3']
+
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: redmine_test
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install package dependencies
+        run: >
+          sudo apt-get install --yes --quiet
+          ghostscript
+          gsfonts
+
+      - name: Allow imagemagick to read PDF files
+        run: |
+          echo '<policymap>' > policy.xml
+          echo '<policy domain="coder" rights="read | write" pattern="PDF" />' >> policy.xml
+          echo '</policymap>' >> policy.xml
+          sudo rm /etc/ImageMagick-6/policy.xml
+          sudo mv policy.xml /etc/ImageMagick-6/policy.xml
+
+      - name: Install Ruby and gems
+        uses: ruby/setup-ruby@v1.176.0
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler-cache: true
+
+      - name: Prepare Redmine configuration
+        run: |
+          cp config/database.yml.example config/database.yml
+          sed -i -e "s/mysql2$/postgresql/g" config/database.yml
+          sed -i -e "s/host:.*$/host: localhost/g" config/database.yml
+          sed -i -e "s/password:.*$/password: root/g" config/database.yml
+          sed -i -e "41,43d" config/database.yml
+
+      - name: Install dependencies
+        env:
+          RAILS_ENV: test
+        run: bundle install --jobs=4 --retry=3 --without mysql2
+
+      - name: Run DB migration
+        env:
+          RAILS_ENV: test
+        run: bundle exec rake db:migrate
+
+      - name: Run tests
+        run: bin/rails test
