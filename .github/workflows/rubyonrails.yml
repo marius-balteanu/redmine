@@ -20,12 +20,14 @@ jobs:
         run: bundle exec rubocop --parallel
 
   tests:
-    name: ${{ github.workflow }} postgresql ruby-${{ matrix.ruby }}
+    name: ${{ github.workflow }} ${{matrix.db}} ruby-${{ matrix.ruby }}
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         ruby: ['3.1', '3.2', '3.3']
+        db: ['postgresql', 'mysql']
+      fail-fast: false
 
     services:
       postgres:
@@ -41,6 +43,20 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: redmine_test
+          MYSQL_ROOT_PASSWORD: 'root'
+        ports:
+          # will assign a random free host port
+          - 3306/tcp
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
 
     steps:
       - name: Checkout code
@@ -66,18 +82,27 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
           bundler-cache: true
 
-      - name: Prepare Redmine configuration
+      - name: Prepare Redmine configuration for PostgreSQL
         run: |
           cp config/database.yml.example config/database.yml
           sed -i -e "s/mysql2$/postgresql/g" config/database.yml
           sed -i -e "s/host:.*$/host: localhost/g" config/database.yml
           sed -i -e "s/password:.*$/password: root/g" config/database.yml
           sed -i -e "41,43d" config/database.yml
+        if: matrix.db == 'postgresql'
+
+      - name: Prepare Redmine configuration for MySQL
+        run: |
+          cp config/database.yml.example config/database.yml
+          sed -i -e "s/host:.*$/host: localhost/g" config/database.yml
+          sed -i -e "s/password:.*$/password: root/g" config/database.yml
+          sed -i -e "41,43d" config/database.yml
+        if: matrix.db == 'mysql'
 
       - name: Install dependencies
         env:
           RAILS_ENV: test
-        run: bundle install --jobs=4 --retry=3 --without mysql2
+        run: bundle install --jobs=4 --retry=3
 
       - name: Run DB migration
         env:
