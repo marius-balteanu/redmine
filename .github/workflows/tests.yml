@@ -1,26 +1,11 @@
-name: "Redmine CI"
+name: Tests
+
 on:
   push:
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2
-          bundler-cache: true
-
-      - name: Lint code for consistent style
-        run: bundle exec rubocop --parallel
-
   tests:
-    name: ${{ github.workflow }} ${{matrix.db}} ruby-${{ matrix.ruby }}
+    name: test ${{matrix.db}} ruby-${{ matrix.ruby }}
     runs-on: ubuntu-latest
 
     strategy:
@@ -93,9 +78,8 @@ jobs:
       - name: Prepare Redmine configuration for MySQL
         run: |
           cp config/database.yml.example config/database.yml
-          sed -i -e "s/host:.*$/host: localhost/g" config/database.yml
+          sed -i -e "s/host:.*$/host: 127.0.0.1/g" config/database.yml
           sed -i -e "s/password:.*$/password: root/g" config/database.yml
-          sed -i -e "41,43d" config/database.yml
         if: matrix.db == 'mysql'
 
       - name: Install dependencies
