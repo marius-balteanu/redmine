@@ -603,8 +603,7 @@ class RepositoryGitTest < ActiveSupport::TestCase
     def test_fake; assert true end
   end
 
-  if File.directory?(REPOSITORY_UTF8_PATH) &&
-      !(Redmine::Database.mysql? && !is_mysql_utf8mb4)
+  if File.directory?(REPOSITORY_UTF8_PATH)
     def test_utf8_emoji
       repo =
         Repository::Git.create(
@@ -624,11 +623,6 @@ class RepositoryGitTest < ActiveSupport::TestCase
     end
   elsif !File.directory?(REPOSITORY_UTF8_PATH)
     puts "Git UTF-8 test repository NOT FOUND. Skipping unit tests !!!"
-    def test_fake; assert true end
-  else
-    puts "Git UTF-8 test repository contains Emoji."
-    puts "Tests connot run on NOT utf8mb4 MySQL."
-    puts "Skipping unit tests !!!"
     def test_fake; assert true end
   end
 end
