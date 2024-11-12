@@ -92,5 +92,13 @@ jobs:
           RAILS_ENV: test
         run: bundle exec rake db:migrate
 
+      - name: Prepare SVN and GIT repositories for tests
+        env:
+          RAILS_ENV: test
+        run: |
+          bundle exec rake test:scm:setup:git
+          bundle exec rake test:scm:setup:git_utf8
+          bundle exec rake test:scm:setup:subversion
+
       - name: Run tests
         run: bin/rails test
