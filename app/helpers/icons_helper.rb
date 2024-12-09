@@ -64,6 +64,8 @@ module IconsHelper
                   event_type
                 end
 
+    Rails.logger.debug "**"*99
+    Rails.logger.debug options.inspect
     sprite_icon(icon_name, **options)
   end
 
