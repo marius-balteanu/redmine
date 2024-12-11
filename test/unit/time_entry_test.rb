@@ -197,6 +197,19 @@ class TimeEntryTest < ActiveSupport::TestCase
     end
   end
 
+  def test_should_restrict_past_dates
+    with_settings :timelog_accept_within_past_days => '2' do
+      entry_two_days_ago = TimeEntry.generate
+      entry_two_days_ago.spent_on = User.current.today - 2
+      assert entry_two_days_ago.save
+
+      entry_three_days_ago = TimeEntry.generate
+      entry_three_days_ago.spent_on = User.current.today - 3
+      assert !entry_three_days_ago.save
+      assert entry_three_days_ago.errors[:base].present?
+    end
+  end
+
   def test_should_require_spent_on
     with_settings :timelog_accept_future_dates => '0' do
       entry = TimeEntry.find(1)

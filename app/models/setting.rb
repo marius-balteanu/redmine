@@ -250,6 +250,10 @@ class Setting < ApplicationRecord
     twofa == '3'
   end
 
+  def self.timelog_days_within_past
+    [Setting.timelog_accept_within_past_days.to_i, 0].max
+  end
+
   # Helper that returns an array based on per_page_options setting
   def self.per_page_options_array
     per_page_options.split(%r{[\s,]}).collect(&:to_i).select {|n| n > 0}.sort

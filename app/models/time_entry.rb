@@ -181,6 +181,8 @@ class TimeEntry < ApplicationRecord
     errors.add :activity_id, :inclusion if activity_id_changed? && project && !project.activities.include?(activity)
     if spent_on && spent_on_changed? && user
       errors.add :base, I18n.t(:error_spent_on_future_date) if !Setting.timelog_accept_future_dates? && (spent_on > user.today)
+      max_past_date = user.today - Setting.timelog_days_within_past
+      errors.add :base, I18n.t(:error_spent_on_past_date, :max_days => Setting.timelog_accept_within_past_days.to_i, :max_past_date => format_date(max_past_date)) if spent_on < max_past_date
     end
     if !Setting.timelog_accept_closed_issues? && issue&.closed? && issue.was_closed?
       errors.add :base, I18n.t(:error_spent_on_closed_issue)
