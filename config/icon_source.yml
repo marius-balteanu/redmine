@@ -233,3 +233,7 @@
   svg: bulb
 - name: message-report
   svg: message-report
+- name: apps
+  svg: apps
+- name: shield-check
+  svg: shield-check
