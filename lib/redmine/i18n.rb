@@ -131,7 +131,8 @@ module Redmine
     end
 
     def valid_languages
-      ::I18n.available_locales
+      # TODO: Quick workaround to remove languages added by doorkeeper-i18n gem
+      ::I18n.available_locales - [:be, :nb, :'zh-CN', :'zh-HK']
     end
 
     # Returns an array of languages names and code sorted by names, example:
