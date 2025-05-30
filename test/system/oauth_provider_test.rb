@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require File.expand_path('../application_system_test_case', __dir__)
+require_relative '../application_system_test_case'
 require 'oauth2'
 require 'webrick'
 
@@ -10,6 +10,7 @@ class OauthProviderSystemTest < ApplicationSystemTestCase
            :enumerations, :custom_fields, :custom_values, :custom_fields_trackers,
            :watchers, :journals, :journal_details, :versions,
            :workflows
+
   test 'application creation and authorization' do
     #
     # admin creates the application, granting permissions and generating a uuid
@@ -31,6 +32,8 @@ class OauthProviderSystemTest < ApplicationSystemTestCase
       check 'View Issues'
       click_button 'Create'
     end
+
+    assert_text "Application created."
 
     assert app = Doorkeeper::Application.find_by_name('Oauth Test')
 
