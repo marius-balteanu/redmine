@@ -932,8 +932,13 @@ module ApplicationHelper
     # Use Loofah for link parsing, headings, and other DOM-based transformations
     fragment = Loofah.html5_fragment(text)
     fragment.scrub!(Redmine::WikiFormatting::LinksScrubber.new(project, obj, attr, only_path, options))
+    fragment.scrub!(Redmine::WikiFormatting::ImagesScrubber.new(project, obj, attr, only_path, options))
     fragment.scrub!(Redmine::WikiFormatting::HeadingsScrubber.new(project, obj, attr, only_path, options, headings_tracker))
     text = fragment.to_s
+
+    # Macros are injected after Loofah processing to avoid issues with macro output being scrubbed
+    # We still use parse_non_pre_blocks for macros to respect pre/code tags
+    text = parse_non_pre_blocks(text, obj, macros, options)
 
     if @parsed_headings.any?
       replace_toc(text, @parsed_headings)
@@ -950,7 +955,7 @@ module ApplicationHelper
       s.scan(/(.*?)(<(\/)?(pre|code)(.*?)>|\z)/im)
       text, full_tag, closing, tag = s[1], s[2], s[3], s[4]
       if tags.empty?
-        yield text
+        # yield text
         inject_macros(text, obj, macros, true, options) if macros.any?
       else
         inject_macros(text, obj, macros, false, options) if macros.any?
