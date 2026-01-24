@@ -927,21 +927,13 @@ module ApplicationHelper
 
     @parsed_headings = []
     @heading_anchors = {}
-    @current_section = 0 if options[:edit_section_links]
+    headings_tracker = { :parsed_headings => @parsed_headings, :heading_anchors => @heading_anchors }
 
-    parse_sections(text, project, obj, attr, only_path, options)
-    text = parse_non_pre_blocks(text, obj, macros, options) do |txt|
-      [:parse_inline_attachments, :parse_hires_images].each do |method_name|
-        send method_name, txt, project, obj, attr, only_path, options
-      end
-    end
-
-    # Use Loofah for link parsing and other DOM-based transformations
+    # Use Loofah for link parsing, headings, and other DOM-based transformations
     fragment = Loofah.html5_fragment(text)
     fragment.scrub!(Redmine::WikiFormatting::LinksScrubber.new(project, obj, attr, only_path, options))
+    fragment.scrub!(Redmine::WikiFormatting::HeadingsScrubber.new(project, obj, attr, only_path, options, headings_tracker))
     text = fragment.to_s
-
-    parse_headings(text, project, obj, attr, only_path, options)
 
     if @parsed_headings.any?
       replace_toc(text, @parsed_headings)
