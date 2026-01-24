@@ -931,10 +931,16 @@ module ApplicationHelper
 
     parse_sections(text, project, obj, attr, only_path, options)
     text = parse_non_pre_blocks(text, obj, macros, options) do |txt|
-      [:parse_inline_attachments, :parse_hires_images, :parse_wiki_links, :parse_redmine_links].each do |method_name|
+      [:parse_inline_attachments, :parse_hires_images].each do |method_name|
         send method_name, txt, project, obj, attr, only_path, options
       end
     end
+
+    # Use Loofah for link parsing and other DOM-based transformations
+    fragment = Loofah.html5_fragment(text)
+    fragment.scrub!(Redmine::WikiFormatting::LinksScrubber.new(project, obj, attr, only_path, options))
+    text = fragment.to_s
+
     parse_headings(text, project, obj, attr, only_path, options)
 
     if @parsed_headings.any?
