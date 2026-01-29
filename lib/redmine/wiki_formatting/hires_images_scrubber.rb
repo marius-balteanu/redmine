@@ -19,27 +19,22 @@
 
 module Redmine
   module WikiFormatting
-    # Combination of SanitizationFilter and ExternalLinksScrubber
-    class HtmlSanitizer
-      SANITIZER = Redmine::WikiFormatting::CommonMark::SanitizationFilter.new
-      SCRUBBERS = [
-        Redmine::WikiFormatting::CommonMark::ExternalLinksScrubber.new,
-      ]
+    class HiresImagesScrubber < Loofah::Scrubber
+      HIRES_FILENAME_REGEX = /@(?<dpr>\dx)\.(?:bmp|gif|jpg|jpe|jpeg|png)\z/i
 
-      def self.call(html)
-        fragment = HtmlParser.parse(html)
-        SANITIZER.call(fragment)
+      def scrub(node)
+        return unless node.name == 'img' && node['src'].present?
 
-        scrubber = Loofah::Scrubber.new do |node|
-          SCRUBBERS.each do |s|
-            result = s.scrub(node)
-            break result if result == Loofah::Scrubber::STOP
-            break if node.parent.nil?
-          end
-        end
+        src = node['src']
 
-        fragment.scrub!(scrubber)
-        fragment.to_s
+        return unless src.include?('@')
+
+        match = src.match(HIRES_FILENAME_REGEX)
+
+        return unless match
+
+        # Set the srcset attribute.
+        node['srcset'] = "#{src} #{match[:dpr]}"
       end
     end
   end
