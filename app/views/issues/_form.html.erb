@@ -30,19 +30,18 @@
 <% end %>
 
 <% if @issue.safe_attribute? 'description' %>
-<p>
+<div id="issue_description_and_toolbar_parent" class="wiki-edit-container">
   <%= f.label_for_field :description, :required => @issue.required_attribute?('description') %>
   <%= content_tag 'span', :id => "issue_description_and_toolbar", :style => (@issue.new_record? ? nil : 'display:none') do %>
-    <%= f.textarea :description, :cols => 60, :accesskey => accesskey(:edit), :class => 'wiki-edit',
+    <%= wikitoolbar preview_url: preview_issue_path(:project_id => @issue.project, :issue_id => @issue.id) do |dataset| %>
+    <%= f.textarea :description, :cols => 60, :accesskey => accesskey(:edit),
                    :rows => [[10, @issue.description.to_s.length / 50].max, 20].min,
-                   :data => {
-                     :auto_complete => true
-                   }.merge(wiki_textarea_stimulus_attributes),
+                   :data => dataset,
                    :no_label => true %>
+    <% end %>
   <% end %>
   <%= link_to_function content_tag(:span, sprite_icon('edit', l(:button_edit))), '$(this).hide(); $("#issue_description_and_toolbar").show()', :class => 'icon icon-edit' unless @issue.new_record? %>
-</p>
-<%= wikitoolbar_for 'issue_description', preview_issue_path(:project_id => @issue.project, :issue_id => @issue.id) %>
+</div>
 <% end %>
 
 <div id="attributes" class="attributes">
@@ -52,7 +51,6 @@
 <%= call_hook(:view_issues_form_details_bottom, { :issue => @issue, :form => f }) %>
 <% end %>
 
-<% heads_for_wiki_formatter %>
 <%= heads_for_auto_complete(@issue.project) %>
 
 <% if User.current.allowed_to?(:add_issue_watchers, @issue.project)%>

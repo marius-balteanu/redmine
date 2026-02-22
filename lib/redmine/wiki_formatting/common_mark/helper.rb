@@ -21,6 +21,11 @@ module Redmine
   module WikiFormatting
     module CommonMark
       module Helper
+        def wikitoolbar(field_id: nil, preview_url: preview_text_path, auto_complete: true, list_autofill: true, &)
+          @wikitoolbar ||= WikiToolbar.new(self)
+          @wikitoolbar.render(field_id: field_id, preview_url: preview_url, auto_complete: auto_complete, list_autofill: list_autofill, &)
+        end
+
         def wikitoolbar_for(field_id, preview_url = preview_text_path)
           heads_for_wiki_formatter
 
@@ -57,6 +62,40 @@ module Redmine
             end
             @heads_for_wiki_formatter_included = true
           end
+        end
+      end
+
+      class WikiToolbar < Redmine::WikiToolbar
+        def controller_name
+          'common-mark-toolbar'
+        end
+
+        def buttons
+          [
+            { label: :label_wiki_toolbar_strong, class: 'jstb_strong', icon: 'bold', action: 'strong', shortcut: 'b' },
+            { label: :label_wiki_toolbar_italic, class: 'jstb_em', icon: 'italic', action: 'italic', shortcut: 'i' },
+            { label: :label_wiki_toolbar_underline, class: 'jstb_ins', icon: 'underline', action: 'underline', shortcut: 'u' },
+            { label: :label_wiki_toolbar_deleted, class: 'jstb_del', icon: 'strikethrough', action: 'deleted' },
+            { label: :label_wiki_toolbar_code, class: 'jstb_code', icon: 'inline-code', action: 'inlineCode' },
+            { class: 'jstSpacer' },
+            { label: :label_wiki_toolbar_heading_1, class: 'jstb_h1', icon: 'h1', action: 'h1' },
+            { label: :label_wiki_toolbar_heading_2, class: 'jstb_h2', icon: 'h2', action: 'h2' },
+            { label: :label_wiki_toolbar_heading_3, class: 'jstb_h3', icon: 'h3', action: 'h3' },
+            { class: 'jstSpacer' },
+            { label: :label_wiki_toolbar_unordered_list, class: 'jstb_ul', icon: 'list', action: 'unorderedList' },
+            { label: :label_wiki_toolbar_ordered_list, class: 'jstb_ol', icon: 'list-numbers', action: 'orderedList' },
+            { label: :label_wiki_toolbar_task_list, class: 'jstb_tl', icon: 'list-check', action: 'taskList' },
+            { class: 'jstSpacer' },
+            { label: :label_wiki_toolbar_quote, class: 'jstb_bq', icon: 'indent-increase', action: 'quote' },
+            { label: :label_wiki_toolbar_unquote, class: 'jstb_unbq', icon: 'indent-decrease', action: 'unquote' },
+            { label: :label_wiki_toolbar_table, class: 'jstb_table', icon: 'table', action: 'table' },
+            { label: :label_wiki_toolbar_preformatted_text, class: 'jstb_pre', icon: 'pre', action: 'pre' },
+            { label: :label_wiki_toolbar_preformatted_code, class: 'jstb_precode', icon: 'changeset', action: 'precode' },
+            { label: :label_wiki_toolbar_wiki_link, class: 'jstb_wiki_link', icon: 'wiki-link', action: 'wikiLink' },
+            { label: :label_wiki_toolbar_image, class: 'jstb_image', icon: 'image', action: 'image' },
+            { class: 'spacer' },
+            { label: :label_wiki_toolbar_help, class: 'jstb_help', icon: 'help', action: 'help' }
+          ]
         end
       end
     end

@@ -29,9 +29,10 @@ module ApplicationHelper
   include Redmine::Hook::Helper
   include Redmine::Helpers::URL
   include IconsHelper
+  include BrowserHelper
 
   extend Forwardable
-  def_delegators :wiki_helper, :wikitoolbar_for, :heads_for_wiki_formatter
+  def_delegators :wiki_helper, :wikitoolbar_for, :heads_for_wiki_formatter, :wikitoolbar
 
   # Return true if user is authorized for controller/action, otherwise false
   def authorize_for(controller, action)

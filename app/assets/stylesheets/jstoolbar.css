@@ -144,7 +144,7 @@
 .jstb_unbq {
     background-image: url(/jstoolbar/indent-decrease.svg);
 }
-.jstb_pre::before {
+.jstBlock .jstb_pre::before {
     content: "pre";
     font-size: 10px;
     color: var(--oc-gray-9);

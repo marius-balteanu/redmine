@@ -1,0 +1,174 @@
+.wiki-editor {
+  border: 1px solid #d7d7d7;
+  border-radius: 3px;
+  margin-bottom: 10px;
+  background: #fff;
+}
+
+.wiki-editor:has(.wiki-editor-edit:not(.hidden)):focus-within {
+  border-color: var(--oc-blue-5);
+}
+
+.wiki-editor-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  /* Align tabs to bottom */
+  justify-content: flex-start;
+  padding-left: 0.5em;
+  /* Remove bottom padding */
+  background-color: #f6f6f6;
+  border-bottom: 1px solid #d7d7d7;
+  gap: 10px;
+}
+
+.wiki-editor-tabs {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  /* No gap between tabs */
+}
+
+.wiki-editor-tab {
+  border: 1px solid transparent;
+  height: auto;
+  border-bottom: none;
+  /* No bottom border to merge with header border */
+  background: none;
+  padding: 6px 12px;
+  border-radius: 3px 3px 0 0;
+  cursor: pointer;
+  color: #555;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin-bottom: -1px;
+  margin-top: -1px;
+}
+
+.wiki-editor-tab:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.wiki-editor-tab.selected {
+  background-color: #fff;
+  border-color: #d7d7d7;
+  color: #222;
+  font-weight: 600;
+  z-index: 2;
+  /* Bring above header border */
+}
+
+.wiki-editor-buttons {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding-bottom: 0;
+}
+
+.wiki-editor-buttons.hidden {
+  display: none;
+}
+
+.wiki-editor-buttons button {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  padding: 2px;
+  cursor: pointer;
+  min-width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #555;
+}
+
+.wiki-editor-buttons button:hover {
+  background-color: #e6e6e6;
+  border-color: #d0d0d0;
+  color: #111;
+}
+
+.wiki-editor-buttons button svg {
+  stroke-width: 2;
+}
+
+/* Icons are usually background images or fonts in Redmine.
+   Assuming render_wikitoolbar_buttons outputs buttons with classes that have background icons.
+   Existing jstoolbar.css usually handles .jstb_strong etc.
+   We might need to ensure those classes still work or adapt them.
+   For now, I'm setting structural CSS.
+*/
+
+.wiki-editor-pane {
+  padding: 0;
+}
+
+.wiki-editor-pane textarea {
+  width: 100%;
+  border: none;
+  padding: 10px;
+  box-sizing: border-box;
+  min-height: 200px;
+  resize: vertical;
+  display: block;
+  outline: none;
+  /* Let the container border handle focus focus indicator potentially, or keep default */
+}
+
+/* Adjustments for Redmine default styles overriding */
+/* .wiki-editor-pane textarea:focus {
+  box-shadow: none;
+  outline: none;
+} */
+
+.wiki-editor-preview {
+  padding: 10px;
+  min-height: 200px;
+  background-color: #fff;
+}
+
+.wiki-editor-preview>p:first-child {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+.wiki-editor-preview>p:last-child {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+/* Container alignment fix for tabular forms */
+.tabular .wiki-edit-container {
+  margin: 0;
+  padding: 3px 0 3px 0;
+  padding-left: 180px;
+  min-height: 2em;
+  clear: left;
+  overflow: hidden;
+}
+
+/* Table Generator Picker */
+.table-generator {
+  position: absolute;
+  border-collapse: collapse;
+  z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #d7d7d7;
+}
+
+.table-generator td {
+  border: 1px solid #eee;
+  padding: 10px;
+  cursor: pointer;
+  width: 10px;
+  height: 10px;
+}
+
+.table-generator td.selected-cell {
+  background-color: var(--oc-blue-1);
+  border-color: var(--oc-blue-3);
+}
