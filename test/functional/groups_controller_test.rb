@@ -314,4 +314,18 @@ class GroupsControllerTest < Redmine::ControllerTest
     assert_response :success
     assert_include 'John Smith', response.body
   end
+
+  def test_add_users_from_context_menu_should_redirect_to_back_url
+    assert_difference 'Group.find(10).users.count', 1 do
+      post(
+        :add_users,
+        :params => {
+          :id => 10,
+          :user_ids => ['2'],
+          :back_url => '/users'
+        }
+      )
+      assert_redirected_to '/users'
+    end
+  end
 end
