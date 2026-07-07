@@ -314,4 +314,31 @@ class SettingsControllerTest < Redmine::ControllerTest
     assert_equal '1', Setting.mail_handler_enable_regex_delimiters
     assert_equal 'On .*, .* at .*, .* <.*<mailto:.*>> wrote:', Setting.mail_handler_body_delimiters
   end
+
+  def test_get_index_with_mail_handler_tab_renders_oauth_providers
+    @request.session[:user_id] = 1 # Admin
+    mock_config = {
+      'providers' => {
+        'google' => { 'client_id' => 'g', 'client_secret' => 's' },
+        'microsoft' => { 'client_id' => 'm', 'client_secret' => 's' }
+      }
+    }
+
+    Redmine::Configuration.with 'email_oauth' => mock_config do
+      get :index, :params => { :tab => 'mail_handler' }
+      assert_response :success
+      assert_select 'legend', :text => 'Enabled OAuth providers'
+      assert_select 'fieldset.settings ul li span', :text => 'Google'
+      assert_select 'fieldset.settings ul li span', :text => 'Microsoft'
+    end
+  end
+
+  def test_get_index_with_mail_handler_tab_renders_no_oauth_providers_message
+    @request.session[:user_id] = 1 # Admin
+    Redmine::Configuration.with 'email_oauth' => nil do
+      get :index, :params => { :tab => 'mail_handler' }
+      assert_response :success
+      assert_select 'div.nodata', :text => /Email OAuth providers are not configured/
+    end
+  end
 end

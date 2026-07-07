@@ -1,0 +1,44 @@
+<div class="contextual">
+<%= link_to sprite_icon('add', l(:button_add)), new_email_oauth_path, class: 'icon icon-add' %>
+</div>
+
+<%= title l(:label_oauth_authentication) %>
+
+<% if @tokens.empty? %>
+  <p class="nodata"><%= l(:label_no_data) %></p>
+<% else %>
+  <table class="list">
+    <thead>
+      <tr>
+        <th><%= l(:field_mail) %></th>
+        <th><%= l(:label_provider) %></th>
+        <th><%= l(:field_status) %></th>
+        <th><%= l(:label_expires_at) %></th>
+        <th><%= l(:field_updated_on) %></th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @tokens.each do |token| %>
+        <tr class="<%= cycle('odd', 'even') %>">
+          <td class="name"><strong><%= token.email %></strong></td>
+          <td><%= token.provider.to_s.capitalize %></td>
+          <td>
+            <% if token.is_valid? %>
+              <%= content_tag(:span, sprite_icon("checked"), :class => 'icon-only icon-checked') %>
+            <% else %>
+              <span class="icon icon-warning">
+                <%= token.last_error %>
+              </span>
+            <% end %>
+          </td>
+          <td><%= format_time(token.expires_at) %></td>
+          <td><%= format_time(token.updated_at) %></td>
+          <td class="buttons">
+            <%= delete_link destroy_email_oauth_path(token) %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+<% end %>

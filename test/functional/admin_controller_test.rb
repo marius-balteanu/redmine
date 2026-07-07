@@ -30,6 +30,19 @@ class AdminControllerTest < Redmine::ControllerTest
     assert_select 'div.nodata', 0
   end
 
+  def test_index_shows_oauth_warning_banner_when_token_is_invalid
+    EmailOauthToken.delete_all
+    EmailOauthToken.create!(
+      email: 'bad-token@example.net',
+      provider: 'microsoft',
+      refresh_token: 'refresh',
+      expires_at: 10.minutes.ago,
+      is_valid: false
+    )
+    get :index
+    assert_select 'div.flash.error', :text => /One or more configured OAuth 2.0 incoming email accounts/
+  end
+
   def test_index_with_no_configuration_data
     delete_configuration_data
     get :index

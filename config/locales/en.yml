@@ -538,6 +538,7 @@ en:
   setting_related_issues_default_columns: Related and sub issues list defaults
   setting_display_related_issues_table_headers: Show table headers
   setting_reactions_enabled: Enable reactions
+  setting_enabled_oauth_providers: Enabled OAuth providers
 
   permission_add_project: Create project
   permission_add_subprojects: Create subprojects
@@ -1001,6 +1002,8 @@ en:
   label_chronological_order: In chronological order
   label_reverse_chronological_order: In reverse chronological order
   label_incoming_emails: Incoming emails
+  label_oauth_authentication: OAuth 2.0 Authentication
+  label_manage_oauth_emails: Manage OAuth 2.0 Email Accounts
   label_generate_key: Generate a key
   label_issue_watchers: Watchers
   label_message_watchers: Watchers
@@ -1193,6 +1196,8 @@ en:
   label_enable_default_issue_due_date_offset: Enable default due date for new issues
   setting_default_issue_due_date_offset: Default due date for new issues
   label_days_relative_to_today: days relative to today
+  label_provider: Provider
+  label_expires_at: Expires at
 
   webhook_event_created: "%{object_name} created"
   webhook_event_updated: "%{object_name} updated"
@@ -1392,6 +1397,9 @@ en:
   text_oauth_copy_secret_now: Copy the secret to a safe place now, it will not be shown again.
   text_oauth_implicit_permissions: View your name, login and primary email address
   text_oauth_info_scopes: Select the scopes this application may request. The application will not be allowed to do more than what is selected here. It will also always be limited by the roles and project memberships of the user who authorized it.
+  text_email_oauth_providers_not_configured: "Email OAuth providers are not configured.\nPlease configure them in config/configuration.yml and restart the application to enable them."
+  text_oauth_email_username_info_html: Must exactly match the <code>username</code> parameter used in the background IMAP fetch job.
+  error_oauth_authentication_failed: "OAuth authentication failed: %{message}"
 
   default_role_manager: Manager
   default_role_developer: Developer

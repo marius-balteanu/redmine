@@ -375,6 +375,12 @@ class Setting < ApplicationRecord
     end.freeze
   end
 
+  # Returns an array containing the names of configured OAuth email providers in configuration.yml
+  def self.email_oauth_providers
+    config = Redmine::Configuration['email_oauth']
+    config ? (config['providers'] || {}).keys : []
+  end
+
   private
 
   def force_utf8_strings(arg)

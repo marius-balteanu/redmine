@@ -32,6 +32,25 @@
 </p>
 </div>
 
+<div class="box tabular settings">
+  <h3><%= l(:label_oauth_authentication) %></h3>
+  <% if Setting.email_oauth_providers.empty? %>
+    <div class="nodata">
+      <%= simple_format(l(:text_email_oauth_providers_not_configured)) %>
+    </div>
+  <% else %>
+    <fieldset class="box settings">
+    <legend><%= l(:setting_enabled_oauth_providers) %></legend>
+    <ul>
+    <% Setting.email_oauth_providers.each do |provider| %>
+      <li><span><%= provider.capitalize %></span></li>
+    <% end %>
+    </ul>
+    </fieldset>
+      <%= link_to l(:label_manage_oauth_emails), email_oauth_index_path, class: 'icon icon-server-authentication' %>
+  <% end %>
+</div>
+
 <%= submit_tag l(:button_save) %>
 
 <% end %>

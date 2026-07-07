@@ -377,6 +377,13 @@ Rails.application.routes.draw do
   get  'mail_handler', :to => 'mail_handler#new'
   post 'mail_handler', :to => 'mail_handler#index'
 
+  # OAuth incoming emails configuration
+  get 'admin/mail_handler/oauth', :to => 'email_oauth#index', :as => 'email_oauth_index'
+  get 'admin/mail_handler/oauth/new', :to => 'email_oauth#new', :as => 'new_email_oauth'
+  post 'admin/mail_handler/oauth/initiate', :to => 'email_oauth#initiate', :as => 'initiate_email_oauth'
+  get 'admin/mail_handler/oauth/callback', :to => 'email_oauth#callback', :as => 'callback_email_oauth'
+  delete 'admin/mail_handler/oauth/:id', :to => 'email_oauth#destroy', :as => 'destroy_email_oauth'
+
   get 'admin', :to => 'admin#index'
   get 'admin/projects', :to => 'admin#projects'
   get 'admin/plugins', :to => 'admin#plugins'

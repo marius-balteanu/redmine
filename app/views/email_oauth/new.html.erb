@@ -1,0 +1,14 @@
+<%= title [l(:label_oauth_authentication), email_oauth_index_path], l(:button_add) %>
+
+<%= labelled_form_for @token, :as => :email_oauth_token, :url => initiate_email_oauth_path, :html => {:id => 'email_oauth_form'} do |f| %>
+  <div class="box tabular">
+    <p>
+      <%= f.text_field :email, :required => true, :size => 40, :placeholder => "redmine@example.net" %>
+      <em class="info"><%= l(:text_oauth_email_username_info_html) %></em>
+    </p>
+    <p>
+      <%= f.select :provider, Setting.email_oauth_providers.map {|p| [p.capitalize, p]}, :required => true, :label => l(:label_provider) %>
+    </p>
+  </div>
+  <%= submit_tag t('doorkeeper.applications.buttons.authorize') %>
+<% end %>

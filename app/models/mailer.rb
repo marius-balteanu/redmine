@@ -560,6 +560,24 @@ class Mailer < ActionMailer::Base
       :subject => 'Redmine test'
   end
 
+  # Notifies active administrators when an OAuth token refresh fails in background.
+  def self.deliver_email_oauth_refresh_failure(token, error_message)
+    users = User.active.where(admin: true)
+    users.each do |user|
+      email_oauth_refresh_failure(user, token, error_message).deliver_later
+    end
+  end
+
+  # Builds the OAuth refresh failure email.
+  def email_oauth_refresh_failure(user, token, error_message)
+    @user = user
+    @token = token
+    @error_message = error_message
+    @oauth_settings_url = url_for(controller: 'email_oauth', action: 'index')
+    mail to: user.mail,
+         subject: "[#{Setting.app_title}] OAuth 2.0 Email Account Authentication Failure"
+  end
+
   # Send a test email to user. Will raise error that may occur during delivery.
   #
   # Exemple:

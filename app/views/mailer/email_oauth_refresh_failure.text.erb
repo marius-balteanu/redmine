@@ -1,0 +1,14 @@
+Hello <%= @user.name %>,
+
+An error occurred while attempting to refresh the OAuth 2.0 access token for the following incoming email account:
+
+Email Account: <%= @token.email %>
+Provider: <%= @token.provider.capitalize %>
+Error Message: <%= @error_message %>
+Failed At: <%= Time.now %>
+
+As a result, Redmine is currently unable to fetch and process incoming emails from this mailbox.
+
+Please log in to Redmine as an administrator, review the error, and re-authorize the account:
+
+<%= @oauth_settings_url %>

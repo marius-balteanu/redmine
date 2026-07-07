@@ -18,6 +18,7 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 require 'net/imap'
+require_relative 'email_oauth/refresher'
 
 module Redmine
   module IMAP
@@ -41,7 +42,19 @@ module Redmine
         if starttls
           imap.starttls
         end
-        imap.login(imap_options[:username], imap_options[:password]) unless imap_options[:username].nil?
+        if imap_options[:username].present?
+          token_record = EmailOauthToken.find_by(email: imap_options[:username])
+          if token_record
+            # Refresh token if needed
+            if Redmine::EmailOAuth::Refresher.refresh!(token_record)
+              imap.authenticate('XOAUTH2', imap_options[:username], token_record.access_token)
+            else
+              raise "OAuth 2.0 authentication failed for #{imap_options[:username]}: #{token_record.last_error}"
+            end
+          else
+            imap.login(imap_options[:username], imap_options[:password])
+          end
+        end
         imap.select(folder)
         imap.uid_search(['NOT', 'SEEN']).each do |uid|
           msg = imap.uid_fetch(uid, 'RFC822')[0].attr['RFC822']

@@ -1,5 +1,13 @@
 <h2><%=l(:label_administration)%></h2>
 
+<% if EmailOauthToken.where(is_valid: false).any? %>
+  <div class="flash error">
+    <strong><%= l(:label_warning) %>:</strong>
+    One or more configured OAuth 2.0 incoming email accounts have failed to refresh and are currently inactive.
+    <%= link_to "Review OAuth status", email_oauth_index_path %>
+  </div>
+<% end %>
+
 <div id="admin-index">
   <%= render :partial => 'no_data' if @no_configuration_data %>
   <%= render :partial => 'menu' %>
