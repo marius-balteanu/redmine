@@ -8,6 +8,9 @@ jobs:
     name: test ${{matrix.db}} ruby-${{ matrix.ruby }}
     runs-on: ubuntu-latest
 
+    env:
+      COVERAGE: ${{ matrix.ruby == '4.0' && matrix.db == 'sqlite3' && 'true' || '' }}
+
     strategy:
       matrix:
         ruby: ['3.3', '3.4', '4.0']
@@ -66,6 +69,14 @@ jobs:
       - name: Run autoload test
         run: |
           bin/rails test:autoload
+
+      - name: Upload coverage report
+        if: always() && matrix.ruby == '4.0' && matrix.db == 'sqlite3'
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report
+          path: coverage
+          if-no-files-found: ignore
 
   system-tests:
     name: system test
