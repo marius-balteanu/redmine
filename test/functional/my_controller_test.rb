@@ -909,4 +909,27 @@ class MyControllerTest < Redmine::ControllerTest
     assert_match /reset/, flash[:notice]
     assert_redirected_to '/my/account'
   end
+
+  def test_show_api_key_when_legacy_api_keys_are_disabled_should_render_404
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      get :show_api_key
+      assert_response :not_found
+    end
+  end
+
+  def test_reset_api_key_when_legacy_api_keys_are_disabled_should_render_404
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      post :reset_api_key
+      assert_response :not_found
+    end
+  end
+
+  def test_account_should_not_show_legacy_api_key_when_legacy_api_keys_are_disabled
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      get :account
+      assert_response :success
+      assert_select 'a[href="/my/api_key"]', :count => 0
+      assert_select 'div[data-controller="api-key-copy"]', :count => 0
+    end
+  end
 end

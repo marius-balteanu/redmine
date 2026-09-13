@@ -134,11 +134,15 @@ class MyController < ApplicationController
   end
 
   def show_api_key
+    (render_404; return) unless Setting.rest_api_legacy_key_enabled?
+
     @user = User.current
   end
 
   # Create a new API key
   def reset_api_key
+    (render_404; return) unless Setting.rest_api_legacy_key_enabled?
+
     if request.post?
       if User.current.api_token
         User.current.api_token.destroy

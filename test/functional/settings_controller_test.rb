@@ -80,6 +80,12 @@ class SettingsControllerTest < Redmine::ControllerTest
     assert_equal 'Test footer', Setting.emails_footer
   end
 
+  def test_edit_integrations_tab_should_include_rest_api_legacy_key_enabled
+    get :edit, :params => {:tab => 'integrations'}
+    assert_response :success
+    assert_select 'input[name=?]', 'settings[rest_api_legacy_key_enabled]'
+  end
+
   def test_edit_commit_update_keywords
     with_settings :commit_update_keywords => [
       {"keywords" => "fixes, resolves", "status_id" => "3"},

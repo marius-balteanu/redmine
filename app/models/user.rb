@@ -455,6 +455,8 @@ class User < Principal
 
   # Return user's API key (a 40 chars long string), used to access the API
   def api_key
+    return nil unless Setting.rest_api_legacy_key_enabled?
+
     if api_token.nil?
       create_api_token(:action => 'api')
     end
@@ -571,6 +573,8 @@ class User < Principal
   end
 
   def self.find_by_api_key(key)
+    return nil unless Setting.rest_api_legacy_key_enabled?
+
     Token.find_active_user('api', key)
   end
 

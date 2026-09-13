@@ -931,6 +931,14 @@ class UserTest < ActiveSupport::TestCase
     assert_equal token.value, user.api_key
   end
 
+  test "#api_key should return nil when legacy api keys are disabled" do
+    user = User.generate!
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      assert_nil user.api_key
+      assert_nil user.api_token
+    end
+  end
+
   test "#find_by_api_key should return nil if no matching key is found" do
     assert_nil User.find_by_api_key('zzzzzzzzz')
   end
@@ -952,6 +960,17 @@ class UserTest < ActiveSupport::TestCase
     user.save
 
     assert_equal user, User.find_by_api_key(token.value)
+  end
+
+  test "#find_by_api_key should return nil when legacy api keys are disabled" do
+    user = User.generate!
+    token = Token.create!(:action => 'api')
+    user.api_token = token
+    user.save
+
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      assert_nil User.find_by_api_key(token.value)
+    end
   end
 
   def test_default_admin_account_changed_should_return_false_if_account_was_not_changed

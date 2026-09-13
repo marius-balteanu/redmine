@@ -286,6 +286,14 @@ class Redmine::ApiTest::UsersTest < Redmine::ApiTest::Base
     assert_select 'user api_key', :text => User.find(2).api_key
   end
 
+  test "GET /users/:id should not return api_key when legacy api keys are disabled" do
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      get '/users/2.xml', :headers => credentials('jsmith')
+      assert_response :success
+      assert_select 'user api_key', 0
+    end
+  end
+
   test "GET /users/:id should not return status for standard user" do
     get '/users/3.xml', :headers => credentials('jsmith')
     assert_response :success

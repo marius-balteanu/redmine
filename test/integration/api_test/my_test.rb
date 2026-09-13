@@ -136,6 +136,20 @@ class Redmine::ApiTest::MyTest < Redmine::ApiTest::Base
     assert_equal key, json['user']['api_key']
   end
 
+  test "GET /my/account.json when legacy api keys are disabled should not disclose the api_key" do
+    with_settings :rest_api_legacy_key_enabled => '0' do
+      get '/my/account.json', :headers => credentials('jsmith', 'jsmith')
+
+      assert_response :success
+      json = ActiveSupport::JSON.decode(response.body)
+      assert_equal 'jsmith', json['user']['login']
+      assert_not(
+        json['user'].key?('api_key'),
+        "Request when legacy api keys are disabled must not disclose the api_key"
+      )
+    end
+  end
+
   test "PUT /my/account.json authenticated via OAuth should be forbidden" do
     application = Doorkeeper::Application.create!(
       :name => 'Test App',

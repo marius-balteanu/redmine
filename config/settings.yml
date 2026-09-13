@@ -337,6 +337,9 @@ start_of_week:
 rest_api_enabled:
   default: 0
   security_notifications: 1
+rest_api_legacy_key_enabled:
+  default: 1
+  security_notifications: 1
 jsonp_enabled:
   default: 0
   security_notifications: 1

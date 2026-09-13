@@ -23,7 +23,7 @@
 (<%= link_to l(:button_reset), my_atom_key_path, :method => :post %>)
 </p>
 
-<% if Setting.rest_api_enabled? %>
+<% if Setting.rest_api_enabled? && Setting.rest_api_legacy_key_enabled? %>
 <h4><%= l(:label_api_access_key) %></h4>
 <div data-controller="api-key-copy">
   <div class="api-key-actions">

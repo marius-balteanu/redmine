@@ -493,6 +493,7 @@ en:
   setting_issue_done_ratio_issue_status: Use the issue status
   setting_start_of_week: Start calendars on
   setting_rest_api_enabled: Enable REST web service
+  setting_rest_api_legacy_key_enabled: Enable legacy API access keys
   setting_cache_formatted_text: Cache formatted text
   setting_default_notification_option: Default notification option
   setting_commit_logtime_enabled: Enable time logging
