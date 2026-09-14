@@ -175,7 +175,7 @@ class ProjectsController < ApplicationController
 
     respond_to do |format|
       format.html do
-        @principals_by_role = @project.principals_by_role
+        @roles_with_active_members = @project.roles_with_active_members.load
         @subprojects = @project.leaf? ? [] : @project.children.visible.to_a
         @news = @project.news.limit(5).includes(:author, :project).reorder("#{News.table_name}.created_on DESC").to_a
         with_subprojects = Setting.display_subprojects_issues?
@@ -195,6 +195,18 @@ class ProjectsController < ApplicationController
       end
       format.api
     end
+  end
+
+  # Lazily renders the members of a role that were omitted from the overview's members box (#44350).
+  def show_all_members
+    @role = @project.roles_with_active_members.detect {|role| role.id == params[:role_id].to_i}
+    unless @role
+      render_404
+      return
+    end
+
+    @principals, _more = @project.principals_for_role(@role, :offset => params[:offset].to_i, :limit => nil)
+    render :layout => false
   end
 
   def settings

@@ -516,6 +516,62 @@ class WatchersControllerTest < Redmine::ControllerTest
     assert_select 'input[name=?][value="10"]', 'watcher[user_ids][]'
   end
 
+  def test_autocomplete_without_query_should_not_paginate_within_a_page
+    @request.session[:user_id] = 2
+    get :autocomplete_for_user, :params => {:project_id => 'ecookbook'}, :xhr => true
+    assert_response :success
+    assert_select 'input[name=?]', 'watcher[user_ids][]', :count => 2
+    assert_select 'p.watcher-more-users', :count => 0
+  end
+
+  def test_autocomplete_without_query_should_load_more_users
+    project = Project.find(1)
+    WatchersController::WATCHER_USERS_PER_PAGE.times do
+      User.add_to_project(User.generate!, project)
+    end
+
+    @request.session[:user_id] = 2
+    get :autocomplete_for_user, :params => {:project_id => 'ecookbook'}, :xhr => true
+    assert_response :success
+    assert_select 'input[name=?]', 'watcher[user_ids][]',
+                  :count => WatchersController::WATCHER_USERS_PER_PAGE
+    assert_select 'p.watcher-more-users a[data-action=?][href*=?]',
+                  'load-more#load', "offset=#{WatchersController::WATCHER_USERS_PER_PAGE}"
+    # The old submit-style onclick handler must not be used
+    assert_select 'a[onclick]', false
+
+    get :autocomplete_for_user,
+        :params => {:project_id => 'ecookbook',
+                    :offset => WatchersController::WATCHER_USERS_PER_PAGE},
+        :xhr => true
+    assert_response :success
+    # eCookbook has 2 fixture watchers, so the second page holds the remaining 2
+    assert_select 'input[name=?]', 'watcher[user_ids][]', :count => 2
+    assert_select 'p.watcher-more-users', :count => 0
+  end
+
+  def test_autocomplete_with_query_should_not_paginate
+    (WatchersController::WATCHER_USERS_PER_PAGE + 1).times do |i|
+      User.generate!(:firstname => 'Loadmore', :lastname => "User#{i}")
+    end
+
+    @request.session[:user_id] = 2
+    get :autocomplete_for_user,
+        :params => {:project_id => 'ecookbook', :q => 'loadmore'}, :xhr => true
+    assert_response :success
+    # A search query is capped by limit and never shows a "load more" trigger
+    assert_select 'input[name=?]', 'watcher[user_ids][]',
+                  :count => WatchersController::WATCHER_USERS_PER_PAGE
+    assert_select 'p.watcher-more-users', :count => 0
+  end
+
+  def test_new_should_wire_load_more_controller
+    @request.session[:user_id] = 2
+    get :new, :params => {:object_type => 'issue', :object_id => '2'}, :xhr => true
+    assert_response :success
+    assert_include 'data-controller=\\"load-more\\"', response.body
+  end
+
   def test_append
     @request.session[:user_id] = 2
     assert_no_difference 'Watcher.count' do

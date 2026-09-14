@@ -906,6 +906,90 @@ class ProjectsControllerTest < Redmine::ControllerTest
     end
   end
 
+  def test_show_should_not_display_locked_users_in_members_box
+    get(:show, :params => {:id => 'ecookbook'})
+    assert_response :success
+    # User 5 is a locked member with the Developer role (see test/fixtures/members.yml)
+    assert_select 'div.members.box a', :text => User.find(5).name, :count => 0
+  end
+
+  def test_show_should_not_display_more_link_when_role_has_few_members
+    project = Project.find(1)
+    role = Role.find(1) # Manager, already has 1 active member (John Smith)
+    5.times {Member.create!(:principal => User.generate!, :project => project, :role_ids => [role.id])}
+
+    get(:show, :params => {:id => 'ecookbook'})
+    assert_response :success
+    assert_select 'div.members.box p.member-role:nth-of-type(1)' do
+      assert_select 'a[href^=?]', '/users/', :count => 6
+      assert_select 'span.show-all-members-trigger', :count => 0
+    end
+  end
+
+  def test_show_should_limit_members_box_principals_per_role_and_display_more_link
+    project = Project.find(1)
+    role = Role.find(1)
+    (Project::MEMBERS_BOX_PRINCIPALS_PER_ROLE + 5).times {Member.create!(:principal => User.generate!, :project => project, :role_ids => [role.id])}
+
+    get(:show, :params => {:id => 'ecookbook'})
+    assert_response :success
+    assert_select 'div.members.box p.member-role:nth-of-type(1)' do
+      assert_select 'a[href^=?]', '/users/', :count => Project::MEMBERS_BOX_PRINCIPALS_PER_ROLE
+      assert_select 'span.show-all-members-trigger a[data-action=?][href*=?]',
+                    'load-more#load', "offset=#{Project::MEMBERS_BOX_PRINCIPALS_PER_ROLE}",
+                    :text => 'Show all'
+    end
+  end
+
+  def test_show_all_members_should_return_every_member_from_the_given_offset
+    project = Project.find(1)
+    role = Role.find(1)
+    5.times {Member.create!(:principal => User.generate!, :project => project, :role_ids => [role.id])}
+
+    get(:show_all_members, :params => {:id => 'ecookbook', :role_id => role.id, :offset => 1}, :xhr => true)
+    assert_response :success
+    assert_select 'a[href^=?]', '/users/', :count => 5
+    assert_select 'span.show-all-members-trigger', :count => 0
+  end
+
+  def test_show_all_members_should_return_every_remaining_member_without_a_further_trigger
+    project = Project.find(1)
+    role = Role.find(1)
+    (Project::MEMBERS_BOX_PRINCIPALS_PER_ROLE + 5).times {Member.create!(:principal => User.generate!, :project => project, :role_ids => [role.id])}
+
+    get(
+      :show_all_members,
+      :params => {:id => 'ecookbook', :role_id => role.id, :offset => Project::MEMBERS_BOX_PRINCIPALS_PER_ROLE},
+      :xhr => true
+    )
+    assert_response :success
+    assert_select 'a[href^=?]', '/users/', :count => 6
+    assert_select 'span.show-all-members-trigger', :count => 0
+  end
+
+  def test_show_all_members_should_not_include_locked_users
+    get(:show_all_members, :params => {:id => 'ecookbook', :role_id => 2, :offset => 0}, :xhr => true)
+    assert_response :success
+    assert_select 'a', :text => User.find(5).name, :count => 0
+  end
+
+  def test_show_all_members_should_not_render_a_stray_comma_when_nothing_remains
+    # Role 1 (Manager) on project 1 has only 1 active member, so offset 999 lands past the end.
+    get(:show_all_members, :params => {:id => 'ecookbook', :role_id => 1, :offset => 999}, :xhr => true)
+    assert_response :success
+    assert_equal '', response.body.strip
+  end
+
+  def test_show_all_members_should_respond_with_not_found_for_a_role_without_active_members
+    get(:show_all_members, :params => {:id => 'ecookbook', :role_id => 999}, :xhr => true)
+    assert_response :not_found
+  end
+
+  def test_show_all_members_should_not_require_login_for_a_public_project
+    get(:show_all_members, :params => {:id => 'ecookbook', :role_id => 1}, :xhr => true)
+    assert_response :success
+  end
+
   def test_settings
     @request.session[:user_id] = 2 # manager
     get(:settings, :params => {:id => 1})

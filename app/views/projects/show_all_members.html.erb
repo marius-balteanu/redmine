@@ -1,0 +1,1 @@
+<% if @principals.any? %>, <%= @principals.collect{|p| link_to_principal(p, :class => p.is_a?(Group) ? 'icon icon-group' : nil)}.join(", ").html_safe %><% end %>

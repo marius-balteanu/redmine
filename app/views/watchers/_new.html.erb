@@ -38,8 +38,10 @@ title =
           {checkboxSelector: 'input[name=\"watcher[user_ids][]\"]'}
          )"
        ) %>
-  <div id="users_for_watcher">
-    <%= principals_check_box_tags('watcher[user_ids][]', users) %>
+  <div id="users_for_watcher"
+       data-controller="load-more"
+       data-load-more-after-load-event-value="redmine:watcherUsersUpdated">
+    <%= render :partial => 'watchers/users_for_watcher', :locals => {:users => users} %>
   </div>
 
   <p class="buttons">

@@ -1,8 +1,12 @@
-  <% if @principals_by_role.any? %>
+  <% if @roles_with_active_members.any? %>
   <div class="members box">
     <h3 class="icon icon-group"><%= sprite_icon('group', l(:label_member_plural)) %></h3>
-    <% @principals_by_role.keys.sort.each do |role| %>
-      <p><span class="label"><%= role %>:</span> <%= @principals_by_role[role].sort.collect{|p| link_to_principal(p, :class => p.is_a?(Group) ? 'icon icon-group' : nil)}.join(", ").html_safe %></p>
+    <% @roles_with_active_members.each do |role| %>
+      <% principals, more = @project.principals_for_role(role) %>
+      <p class="member-role" data-controller="load-more">
+        <span class="label"><%= role %>:</span>
+        <%= principals.collect{|p| link_to_principal(p, :class => p.is_a?(Group) ? 'icon icon-group' : nil)}.join(", ").html_safe %><% if more %><span class="show-all-members-trigger" data-load-more-target="trigger">, <%= link_to(l(:label_show_all), show_all_members_project_path(@project, :role_id => role.id, :offset => principals.size), :data => {:action => 'load-more#load'}) %></span><% end %>
+      </p>
     <% end %>
   </div>
   <% end %>

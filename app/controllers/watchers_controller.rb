@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 class WatchersController < ApplicationController
+  WATCHER_USERS_PER_PAGE = 100
+
   before_action :require_login, :find_watchables, :only => [:watch, :unwatch]
 
   def watch
@@ -150,6 +152,9 @@ class WatchersController < ApplicationController
 
   def users_for_new_watcher
     scope = nil
+    limit = WATCHER_USERS_PER_PAGE
+    offset = params[:offset].to_i
+    offset = 0 if offset < 0
     if params[:q].blank?
       if @project.present?
         scope = @project.principals.assignable_watchers
@@ -157,9 +162,20 @@ class WatchersController < ApplicationController
         scope = Principal.joins(:members).where(:members => { :project_id => @projects }).assignable_watchers.distinct
       end
     else
-      scope = Principal.assignable_watchers.limit(100)
+      # A search query already caps the result, so no "load more" is needed
+      scope = Principal.assignable_watchers.limit(limit)
     end
-    users = scope.sorted.like(params[:q]).to_a
+    scope = scope.sorted.like(params[:q])
+    if params[:q].blank?
+      # Fetch one extra record to know whether a further page exists
+      users = scope.offset(offset).limit(limit + 1).to_a
+      @more_users_for_watcher = users.size > limit
+      @watcher_users_next_offset = offset + limit
+      users = users.first(limit)
+    else
+      @more_users_for_watcher = false
+      users = scope.to_a
+    end
     if @watchables && @watchables.size == 1
       watchable_object = @watchables.first
       users -= watchable_object.visible_watcher_users

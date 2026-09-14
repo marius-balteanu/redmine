@@ -30,6 +30,9 @@ class Project < ApplicationRecord
   # Maximum length for project identifiers
   IDENTIFIER_MAX_LENGTH = 100
 
+  # Number of principals initially listed per role in the overview page's members box
+  MEMBERS_BOX_PRINCIPALS_PER_ROLE = 50 unless const_defined?(:MEMBERS_BOX_PRINCIPALS_PER_ROLE)
+
   has_many :memberships, :class_name => 'Member', :inverse_of => :project
   # Memberships of active users only
   has_many :members,
@@ -565,6 +568,7 @@ class Project < ApplicationRecord
   end
 
   # Returns a hash of project users/groups grouped by role
+  # Kept for backward compatibility; no longer used by Redmine core.
   def principals_by_role
     memberships.active.includes(:principal, :roles).inject({}) do |h, m|
       m.roles.each do |r|
@@ -573,6 +577,30 @@ class Project < ApplicationRecord
       end
       h
     end
+  end
+
+  # Returns the roles that have at least one active member, without loading any principal.
+  def roles_with_active_members
+    Role.where(:id => memberships.active.joins(:roles).select("#{Role.table_name}.id")).sorted
+  end
+
+  # Returns [principals, more]: a page of the project's active members having the
+  # given role. A nil limit returns everything from the offset on, and more is false.
+  def principals_for_role(role, offset: 0, limit: MEMBERS_BOX_PRINCIPALS_PER_ROLE)
+    offset = 0 if offset < 0
+    # A subquery avoids DISTINCT + ORDER BY on non-selected columns, which PostgreSQL rejects.
+    scope = Principal.where(
+      :id => memberships.active.joins(:roles).where(:roles => {:id => role.id}).select(:user_id)
+    ).sorted.offset(offset)
+    if limit
+      principals = scope.limit(limit + 1).to_a
+      more = principals.size > limit
+      principals.pop if more
+    else
+      principals = scope.to_a
+      more = false
+    end
+    [principals, more]
   end
 
   # Adds user as a project member with the default role

@@ -480,6 +480,46 @@ class ProjectTest < ActiveSupport::TestCase
     assert_not principals_by_role.values.flatten.include?(locked_user)
   end
 
+  def test_roles_with_active_members
+    roles = Project.find(1).roles_with_active_members
+    assert_kind_of ActiveRecord::Relation, roles
+    assert_equal [1, 2], roles.pluck(:id)
+  end
+
+  def test_roles_with_active_members_should_only_consider_active_users
+    project = Project.generate!
+    role = Role.find(1)
+    Member.create!(:principal => User.find(5), :project => project, :role_ids => [role.id])
+
+    assert_equal [], project.roles_with_active_members.to_a
+  end
+
+  def test_principals_for_role_should_support_limit_and_offset
+    project = Project.find(1)
+    role = Role.find(1)
+    5.times {Member.create!(:principal => User.generate!, :project => project, :role_ids => [role.id])}
+
+    first_page, more = project.principals_for_role(role, :offset => 0, :limit => 4)
+    assert_equal 4, first_page.size
+    assert_equal true, more
+
+    second_page, more = project.principals_for_role(role, :offset => 4, :limit => 4)
+    assert_equal 2, second_page.size
+    assert_equal false, more
+    assert_empty first_page & second_page
+
+    all, more = project.principals_for_role(role, :limit => nil)
+    assert_equal 6, all.size
+    assert_equal false, more
+  end
+
+  def test_principals_for_role_should_only_return_active_users
+    principals, _more = Project.find(1).principals_for_role(Role.find(2), :limit => nil)
+    locked_user = User.find(5)
+    assert Project.find(1).memberships.map(&:principal).include?(locked_user)
+    assert_not principals.include?(locked_user)
+  end
+
   def test_rolled_up_trackers
     parent = Project.find(1)
     parent.trackers = Tracker.find([1, 2])

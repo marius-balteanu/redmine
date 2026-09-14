@@ -148,6 +148,7 @@ Rails.application.routes.draw do
 
     member do
       get 'settings(/:tab)', :action => 'settings', :as => 'settings'
+      get 'show_all_members'
       match 'archive', :via => [:post, :put]
       match 'unarchive', :via => [:post, :put]
       match 'close', :via => [:post, :put]

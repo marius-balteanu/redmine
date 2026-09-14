@@ -859,6 +859,10 @@ function observeSearchfield(fieldId, targetId, url, options) {
       $form.on('ajax:complete', 'a[data-remote]', function() {
         restoreChecked();
       });
+      // Restore selection after "load more" appends users to the list
+      $form.on('redmine:watcherUsersUpdated load-more:loaded', function() {
+        restoreChecked();
+      });
     }
 
     var check = function() {
