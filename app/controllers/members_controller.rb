@@ -35,7 +35,7 @@ class MembersController < ApplicationController
     @members = scope.includes(:principal, :roles).order(:id)
 
     respond_to do |format|
-      format.html {head :not_acceptable}
+      format.html
       format.api do
         @offset, @limit = api_offset_and_limit
         @member_count = scope.count
@@ -44,7 +44,11 @@ class MembersController < ApplicationController
         @members = @members.limit(@limit).offset(@offset).to_a
       end
       format.csv do
-        send_data(members_to_csv(@members), type: 'text/csv; header=present', filename: "#{@project.identifier}-members.csv")
+        if User.current.allowed_to?(:manage_members, @project)
+          send_data(members_to_csv(@members), type: 'text/csv; header=present', filename: "#{@project.identifier}-members.csv")
+        else
+          head :forbidden
+        end
       end
     end
   end
