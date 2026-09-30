@@ -8,7 +8,7 @@
 <p><%= link_to sprite_icon('add', l(:label_member_new)), new_project_membership_path(@project, members_list_params), :remote => true, :class => "icon icon-add" %></p>
 <% end %>
 
-<%= form_tag(settings_project_path(@project, :tab => 'members'), :method => :get, :id => 'members-filter-form') do %>
+<%= form_tag(project_members_path_with_context(@project), :method => :get, :id => 'members-filter-form') do %>
 <fieldset><legend><%= l(:label_filter_plural) %></legend>
 <label for='member_name'><%= l(:label_user) %> / <%= l(:label_group) %>:</label>
 <%= text_field_tag 'member_name', params[:member_name], :size => 20 %>
@@ -17,7 +17,7 @@
                options_for_select([[l(:label_all), '']] + Role.givable.pluck(:name, :id), params[:member_role_id]),
                :onchange => "this.form.submit(); return false;" %>
 <%= submit_tag l(:button_apply), :class => "small", :name => nil %>
-<%= link_to sprite_icon('reload', l(:button_clear)), settings_project_path(@project, :tab => 'members'), :class => 'icon icon-reload' %>
+<%= link_to sprite_icon('reload', l(:button_clear)), project_members_path_with_context(@project), :class => 'icon icon-reload' %>
 </fieldset>
 <% end %>
 &nbsp;
@@ -69,7 +69,7 @@
 </div>
 <span class="pagination">
   <%= pagination_links_full(member_pages, member_count) do |text, parameters, options|
-        link_to text, settings_project_path(@project, 'members', request.query_parameters.except('tab', :tab).merge(parameters)), options
+        link_to text, project_members_path_with_context(@project, request.query_parameters.merge(parameters)), options
       end %>
 </span>
 <% if User.current.allowed_to?(:manage_members, @project) %>

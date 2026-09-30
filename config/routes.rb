@@ -164,7 +164,7 @@ Rails.application.routes.draw do
       end
     end
 
-    get 'members', :to => 'members#index', :as => 'member'
+    get 'members', :to => 'members#index', :as => 'members'
 
     resource :enumerations, :controller => 'project_enumerations', :only => [:update, :destroy]
 

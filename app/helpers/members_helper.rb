@@ -109,4 +109,14 @@ module MembersHelper
       end
     end
   end
+
+  def project_members_path_with_context(project, parameters = {})
+    params = parameters.is_a?(Hash) ? parameters.except('tab', :tab) : parameters
+    if (controller_name == 'members' && action_name == 'index') ||
+       (controller_name != 'projects' && respond_to?(:request) && request&.referer.present? && request.referer.include?('/members') && !request.referer.include?('/settings'))
+      project_members_path(project, params)
+    else
+      settings_project_path(project, 'members', params)
+    end
+  end
 end

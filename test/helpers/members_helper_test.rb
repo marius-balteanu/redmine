@@ -76,4 +76,24 @@ class MembersHelperTest < Redmine::HelperTest
     assert_equal [2, 4], members.map(&:id).sort
     assert_equal 2, member_count
   end
+
+  def test_project_members_path_with_context_in_settings_context
+    project = Project.find('ecookbook')
+    stubs(:controller_name).returns('projects')
+    stubs(:action_name).returns('settings')
+
+    assert_equal '/projects/ecookbook/settings/members', project_members_path_with_context(project)
+    assert_equal '/projects/ecookbook/settings/members?members_page=2', project_members_path_with_context(project, :members_page => 2)
+    assert_equal '/projects/ecookbook/settings/members?members_page=2', project_members_path_with_context(project, :tab => 'members', :members_page => 2)
+  end
+
+  def test_project_members_path_with_context_in_project_members_context
+    project = Project.find('ecookbook')
+    stubs(:controller_name).returns('members')
+    stubs(:action_name).returns('index')
+
+    assert_equal '/projects/ecookbook/members', project_members_path_with_context(project)
+    assert_equal '/projects/ecookbook/members?members_page=2', project_members_path_with_context(project, :members_page => 2)
+    assert_equal '/projects/ecookbook/members?members_page=2', project_members_path_with_context(project, :tab => 'members', :members_page => 2)
+  end
 end
