@@ -165,6 +165,34 @@ class WikiToolbarTest < ApplicationSystemTestCase
     assert_equal 'issue_description', page.evaluate_script('document.activeElement.id')
   end
 
+  def test_toolbar_should_reset_before_turbo_caches_the_page
+    log_user('jsmith', 'jsmith')
+    visit '/projects/ecookbook/issues/new'
+
+    fill_in 'Description', :with => 'Some text'
+    click_link 'Preview'
+    assert_selector 'div.wiki-preview', :visible => true, :text => 'Some text'
+
+    page.execute_script("document.dispatchEvent(new Event('turbo:before-cache'))")
+    assert_selector 'textarea#issue_description', :visible => true
+    assert_selector 'div.wiki-preview', :visible => false
+    assert_selector 'a.tab-edit.selected'
+
+    find('button.jstb_table').click
+    assert_selector 'table.table-generator'
+    page.execute_script("document.dispatchEvent(new Event('turbo:before-cache'))")
+    assert_no_selector 'table.table-generator'
+  end
+
+  def test_wiki_page_editor
+    log_user('jsmith', 'jsmith')
+    visit '/projects/ecookbook/wiki/CookBook_documentation/edit'
+
+    assert_selector 'div.jstBlock div.jstEditor textarea#content_text'
+    find('#content_text').click.send_keys([:control, :shift, 'p'])
+    assert_selector 'div.wiki-preview', :visible => true, :text => 'CookBook documentation'
+  end
+
   private
 
   def select_text(id, start, finish)

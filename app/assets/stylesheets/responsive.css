@@ -685,7 +685,7 @@
   }
 
   /* tabular forms resets for mobile */
-  .tabular p, .tabular.settings p {
+  .tabular p, .tabular.settings p, .tabular div.wiki-field, .tabular.settings div.wiki-field {
     padding-inline-start: 0;
   }
 
