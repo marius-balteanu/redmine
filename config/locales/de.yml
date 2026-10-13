@@ -1531,3 +1531,22 @@ de:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Fett
+  label_wiki_toolbar_italic: Kursiv
+  label_wiki_toolbar_underline: Unterstrichen
+  label_wiki_toolbar_deleted: Durchgestrichen
+  label_wiki_toolbar_code: Quelltext
+  label_wiki_toolbar_heading_1: Überschrift 1. Ordnung
+  label_wiki_toolbar_heading_2: Überschrift 2. Ordnung
+  label_wiki_toolbar_heading_3: Überschrift 3. Ordnung
+  label_wiki_toolbar_unordered_list: Aufzählungsliste
+  label_wiki_toolbar_ordered_list: Nummerierte Liste
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Zitat
+  label_wiki_toolbar_unquote: Zitat entfernen
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Präformatierter Text
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Verweis (Link) zu einer Wiki-Seite
+  label_wiki_toolbar_image: Grafik
+  label_wiki_toolbar_help: Help

@@ -1577,3 +1577,22 @@ sr-YU:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Podebljano
+  label_wiki_toolbar_italic: Kurziv
+  label_wiki_toolbar_underline: Podvučeno
+  label_wiki_toolbar_deleted: Obrisano
+  label_wiki_toolbar_code: Ugrađeni kôd
+  label_wiki_toolbar_heading_1: Naslov 1
+  label_wiki_toolbar_heading_2: Naslov 2
+  label_wiki_toolbar_heading_3: Naslov 3
+  label_wiki_toolbar_unordered_list: Lista nabrajanja
+  label_wiki_toolbar_ordered_list: Uređena lista
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Pod navodnicima
+  label_wiki_toolbar_unquote: Ukloni navodnike
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Prethodno formatiran tekst
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Veza prema Wiki strani
+  label_wiki_toolbar_image: Slika
+  label_wiki_toolbar_help: Help

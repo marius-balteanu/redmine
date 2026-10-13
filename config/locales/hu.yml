@@ -1510,3 +1510,22 @@
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Félkövér
+  label_wiki_toolbar_italic: Dőlt
+  label_wiki_toolbar_underline: Aláhúzott
+  label_wiki_toolbar_deleted: Törölt
+  label_wiki_toolbar_code: Kód sorok
+  label_wiki_toolbar_heading_1: Fejléc 1
+  label_wiki_toolbar_heading_2: Fejléc 2
+  label_wiki_toolbar_heading_3: Fejléc 3
+  label_wiki_toolbar_unordered_list: Felsorolás
+  label_wiki_toolbar_ordered_list: Számozott lista
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Idézet
+  label_wiki_toolbar_unquote: Idézet eltávolítása
+  label_wiki_toolbar_table: Táblázat
+  label_wiki_toolbar_preformatted_text: Előreformázott szöveg
+  label_wiki_toolbar_preformatted_code: Kiemelt code
+  label_wiki_toolbar_wiki_link: Link egy Wiki oldalra
+  label_wiki_toolbar_image: Kép
+  label_wiki_toolbar_help: Help

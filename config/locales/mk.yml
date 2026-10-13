@@ -1575,3 +1575,22 @@ mk:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Задебелен
+  label_wiki_toolbar_italic: Закосен
+  label_wiki_toolbar_underline: Подвлечен
+  label_wiki_toolbar_deleted: Прецртан
+  label_wiki_toolbar_code: Код
+  label_wiki_toolbar_heading_1: Заглавје 1
+  label_wiki_toolbar_heading_2: Заглавје 2
+  label_wiki_toolbar_heading_3: Заглавје 3
+  label_wiki_toolbar_unordered_list: Неподредена листа
+  label_wiki_toolbar_ordered_list: Подредена листа
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Цитат
+  label_wiki_toolbar_unquote: Отстрани цитат
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Форматиран текст
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Врска до вики страна
+  label_wiki_toolbar_image: Слика
+  label_wiki_toolbar_help: Help

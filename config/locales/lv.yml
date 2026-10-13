@@ -1569,3 +1569,22 @@ lv:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Treknraksts
+  label_wiki_toolbar_italic: Slīpraksts
+  label_wiki_toolbar_underline: Pasvītrojums
+  label_wiki_toolbar_deleted: Dzēsts
+  label_wiki_toolbar_code: Iekļauts kods
+  label_wiki_toolbar_heading_1: Virsraksts 1
+  label_wiki_toolbar_heading_2: Virsraksts 2
+  label_wiki_toolbar_heading_3: Virsraksts 3
+  label_wiki_toolbar_unordered_list: Nesakārtots saraksts
+  label_wiki_toolbar_ordered_list: Sakārtots saraksts
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Citēt
+  label_wiki_toolbar_unquote: Noņemt citātu
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Iepriekš formatēts teksts
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Saite uz Wiki lapu
+  label_wiki_toolbar_image: Attēls
+  label_wiki_toolbar_help: Help

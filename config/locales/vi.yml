@@ -1579,3 +1579,22 @@ vi:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Đậm
+  label_wiki_toolbar_italic: Nghiêng
+  label_wiki_toolbar_underline: Gạch chân
+  label_wiki_toolbar_deleted: Xóa
+  label_wiki_toolbar_code: Mã chung dòng
+  label_wiki_toolbar_heading_1: Tiêu đề 1
+  label_wiki_toolbar_heading_2: Tiêu đề 2
+  label_wiki_toolbar_heading_3: Tiêu đề 3
+  label_wiki_toolbar_unordered_list: Danh sách không thứ tự
+  label_wiki_toolbar_ordered_list: Danh sách có thứ tự
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Trích dẫn
+  label_wiki_toolbar_unquote: Bỏ trích dẫn
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Mã nguồn
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Liên kết đến trang wiki
+  label_wiki_toolbar_image: Ảnh
+  label_wiki_toolbar_help: Help

@@ -1592,3 +1592,22 @@ ko:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: 굵게
+  label_wiki_toolbar_italic: 기울임
+  label_wiki_toolbar_underline: 밑줄
+  label_wiki_toolbar_deleted: 취소선
+  label_wiki_toolbar_code: 코드
+  label_wiki_toolbar_heading_1: 제목 1
+  label_wiki_toolbar_heading_2: 제목 2
+  label_wiki_toolbar_heading_3: 제목 3
+  label_wiki_toolbar_unordered_list: 글머리 기호
+  label_wiki_toolbar_ordered_list: 번호 매기기
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: 인용
+  label_wiki_toolbar_unquote: 인용 취소
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: 있는 그대로 표현 (Preformatted text)
+  label_wiki_toolbar_preformatted_code: 색상화한 코드
+  label_wiki_toolbar_wiki_link: Wiki 페이지에 연결
+  label_wiki_toolbar_image: 그림
+  label_wiki_toolbar_help: Help

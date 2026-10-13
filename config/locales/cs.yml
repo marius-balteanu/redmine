@@ -1555,3 +1555,22 @@ cs:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Tučné
+  label_wiki_toolbar_italic: Kurzíva
+  label_wiki_toolbar_underline: Podtržené
+  label_wiki_toolbar_deleted: 'Přeškrtnuté '
+  label_wiki_toolbar_code: Vnořený kód
+  label_wiki_toolbar_heading_1: Nadpis 1
+  label_wiki_toolbar_heading_2: Nadpis 2
+  label_wiki_toolbar_heading_3: Nadpis 3
+  label_wiki_toolbar_unordered_list: Seznam
+  label_wiki_toolbar_ordered_list: Uspořádaný seznam
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Citace
+  label_wiki_toolbar_unquote: Odstranit citaci
+  label_wiki_toolbar_table: Tabulka
+  label_wiki_toolbar_preformatted_text: Předformátovaný text
+  label_wiki_toolbar_preformatted_code: Zvýrazněný kód
+  label_wiki_toolbar_wiki_link: Vložit odkaz na Wiki stránku
+  label_wiki_toolbar_image: Vložit obrázek
+  label_wiki_toolbar_help: Help

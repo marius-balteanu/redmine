@@ -1536,3 +1536,22 @@ lt:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Pastorinti
+  label_wiki_toolbar_italic: Kursyvu
+  label_wiki_toolbar_underline: Pabraukti
+  label_wiki_toolbar_deleted: Užbraukti
+  label_wiki_toolbar_code: Kodas
+  label_wiki_toolbar_heading_1: Antraštė 1
+  label_wiki_toolbar_heading_2: Antraštė 2
+  label_wiki_toolbar_heading_3: Antraštė 3
+  label_wiki_toolbar_unordered_list: Nenumeruotas sąrašas
+  label_wiki_toolbar_ordered_list: Numeruotas sąrašas
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Cituoti
+  label_wiki_toolbar_unquote: Pašalinti citavimą
+  label_wiki_toolbar_table: Lentelė
+  label_wiki_toolbar_preformatted_text: Preformatuotas tekstas
+  label_wiki_toolbar_preformatted_code: Paryškintas kodas
+  label_wiki_toolbar_wiki_link: Nuoroda į Wiki puslapį
+  label_wiki_toolbar_image: Paveikslėlis
+  label_wiki_toolbar_help: Help

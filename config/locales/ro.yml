@@ -1570,3 +1570,22 @@ ro:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Bold
+  label_wiki_toolbar_italic: Italic
+  label_wiki_toolbar_underline: Subliniat
+  label_wiki_toolbar_deleted: Șters
+  label_wiki_toolbar_code: Fragment de cod
+  label_wiki_toolbar_heading_1: Heading 1
+  label_wiki_toolbar_heading_2: Heading 2
+  label_wiki_toolbar_heading_3: Heading 3
+  label_wiki_toolbar_unordered_list: Listă pe puncte
+  label_wiki_toolbar_ordered_list: Listă ordonată
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Citează
+  label_wiki_toolbar_unquote: Fără citat
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Text preformatat
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Trimitere către o pagină wiki
+  label_wiki_toolbar_image: Imagine
+  label_wiki_toolbar_help: Help

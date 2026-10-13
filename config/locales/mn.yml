@@ -1575,3 +1575,22 @@ mn:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Бүдүүн
+  label_wiki_toolbar_italic: Налуу
+  label_wiki_toolbar_underline: Доогуур зураас
+  label_wiki_toolbar_deleted: Устгагдсан
+  label_wiki_toolbar_code: Програмын код
+  label_wiki_toolbar_heading_1: Гарчиг 1
+  label_wiki_toolbar_heading_2: Гарчиг 2
+  label_wiki_toolbar_heading_3: Гарчиг 3
+  label_wiki_toolbar_unordered_list: Эрэмбэгүй жагсаалт
+  label_wiki_toolbar_ordered_list: Эрэмбэтэй жагсаалт
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Ишлэл
+  label_wiki_toolbar_unquote: Ишлэлийг устгах
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Өмнө нь хэлбэржсэн текст
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Вики хуудас руу холбох
+  label_wiki_toolbar_image: Зураг
+  label_wiki_toolbar_help: Help

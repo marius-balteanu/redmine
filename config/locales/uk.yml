@@ -1563,3 +1563,22 @@ uk:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Жирний
+  label_wiki_toolbar_italic: Курсив
+  label_wiki_toolbar_underline: Підкреслений
+  label_wiki_toolbar_deleted: Закреслений
+  label_wiki_toolbar_code: Інлайн код
+  label_wiki_toolbar_heading_1: Заголовок 1
+  label_wiki_toolbar_heading_2: Заголовок 2
+  label_wiki_toolbar_heading_3: Заголовок 3
+  label_wiki_toolbar_unordered_list: Ненумерованний список
+  label_wiki_toolbar_ordered_list: Нумерований список
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Цитування
+  label_wiki_toolbar_unquote: Видалити цитування
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Попередньо відформатований текст
+  label_wiki_toolbar_preformatted_code: Виділений код
+  label_wiki_toolbar_wiki_link: Посилання на сторінку Wiki
+  label_wiki_toolbar_image: Зображення
+  label_wiki_toolbar_help: Help

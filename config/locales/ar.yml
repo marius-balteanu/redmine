@@ -1575,3 +1575,22 @@ ar:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: قوي
+  label_wiki_toolbar_italic: مائل
+  label_wiki_toolbar_underline: تسطير
+  label_wiki_toolbar_deleted: محذوف
+  label_wiki_toolbar_code: رمز ضمني
+  label_wiki_toolbar_heading_1: عنوان 1
+  label_wiki_toolbar_heading_2: عنوان 2
+  label_wiki_toolbar_heading_3: عنوان 3
+  label_wiki_toolbar_unordered_list: قائمة غير مرتبة
+  label_wiki_toolbar_ordered_list: قائمة مرتبة
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: اقتباس
+  label_wiki_toolbar_unquote: إزالة الاقتباس
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: نص مسبق التنسيق
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: رابط الى صفحة ويكي
+  label_wiki_toolbar_image: صورة
+  label_wiki_toolbar_help: Help

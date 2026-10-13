@@ -1513,3 +1513,22 @@ ja:
   mail_subject_test_email: Redmine テストメール
   mail_body_test_email: これはRedmineから送信されたテストメールです。
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: 強調
+  label_wiki_toolbar_italic: 斜体
+  label_wiki_toolbar_underline: 下線
+  label_wiki_toolbar_deleted: 取り消し線
+  label_wiki_toolbar_code: コード
+  label_wiki_toolbar_heading_1: 見出し 1
+  label_wiki_toolbar_heading_2: 見出し 2
+  label_wiki_toolbar_heading_3: 見出し 3
+  label_wiki_toolbar_unordered_list: 順不同リスト
+  label_wiki_toolbar_ordered_list: 番号つきリスト
+  label_wiki_toolbar_task_list: タスクリスト
+  label_wiki_toolbar_quote: 引用
+  label_wiki_toolbar_unquote: 引用解除
+  label_wiki_toolbar_table: テーブル
+  label_wiki_toolbar_preformatted_text: 整形済みテキスト
+  label_wiki_toolbar_preformatted_code: コードハイライト
+  label_wiki_toolbar_wiki_link: Wikiページへのリンク
+  label_wiki_toolbar_image: 画像
+  label_wiki_toolbar_help: ヘルプ

@@ -1576,3 +1576,22 @@ eu:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Lodia
+  label_wiki_toolbar_italic: Etzana
+  label_wiki_toolbar_underline: Azpimarra
+  label_wiki_toolbar_deleted: Ezabatuta
+  label_wiki_toolbar_code: Inline Code
+  label_wiki_toolbar_heading_1: 1 Goiburua
+  label_wiki_toolbar_heading_2: 2 Goiburua
+  label_wiki_toolbar_heading_3: 3 Goiburua
+  label_wiki_toolbar_unordered_list: Ordenatu gabeko zerrenda
+  label_wiki_toolbar_ordered_list: Ordenatutako zerrenda
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Aipamena
+  label_wiki_toolbar_unquote: Aipamena kendu
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Aurrez formateatutako testua
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Wiki orri baterako esteka
+  label_wiki_toolbar_image: Irudia
+  label_wiki_toolbar_help: Help

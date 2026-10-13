@@ -1580,3 +1580,22 @@ et:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Rõhutatult
+  label_wiki_toolbar_italic: Kaldkirjas
+  label_wiki_toolbar_underline: Allakriipsutatult
+  label_wiki_toolbar_deleted: Läbikriipsutatult
+  label_wiki_toolbar_code: Koodiblokk
+  label_wiki_toolbar_heading_1: 1. taseme pealkiri
+  label_wiki_toolbar_heading_2: 2. taseme pealkiri
+  label_wiki_toolbar_heading_3: 3. taseme pealkiri
+  label_wiki_toolbar_unordered_list: Täpitud nimekiri
+  label_wiki_toolbar_ordered_list: Nummerdatud nimekiri
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: 'Tsitaat: aste juurde'
+  label_wiki_toolbar_unquote: 'Tsitaat: aste madalamaks'
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Eelvormindatud tekst
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Vikilehe link
+  label_wiki_toolbar_image: Pilt
+  label_wiki_toolbar_help: Help

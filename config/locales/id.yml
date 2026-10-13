@@ -1577,3 +1577,22 @@ id:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Tebal
+  label_wiki_toolbar_italic: Miring
+  label_wiki_toolbar_underline: Garis bawah
+  label_wiki_toolbar_deleted: Dihapus
+  label_wiki_toolbar_code: Inline Code
+  label_wiki_toolbar_heading_1: Judul 1
+  label_wiki_toolbar_heading_2: Judul 2
+  label_wiki_toolbar_heading_3: Judul 3
+  label_wiki_toolbar_unordered_list: Daftar tak terurut
+  label_wiki_toolbar_ordered_list: Daftar terurut
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Kutipan
+  label_wiki_toolbar_unquote: Hapus kutipan
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Teks terformat
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Tautkan ke halaman wiki
+  label_wiki_toolbar_image: Gambar
+  label_wiki_toolbar_help: Help

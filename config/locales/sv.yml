@@ -1533,3 +1533,22 @@ sv:
   mail_subject_test_email: Redmine-test
   mail_body_test_email: Det här är ett testmejl från Redmine.
   text_mermaid_available: Mermaid.js tillgängligt (valfritt)
+  label_wiki_toolbar_strong: Fet
+  label_wiki_toolbar_italic: Kursiv
+  label_wiki_toolbar_underline: Understruken
+  label_wiki_toolbar_deleted: Genomstruken
+  label_wiki_toolbar_code: Kod
+  label_wiki_toolbar_heading_1: Rubrik 1
+  label_wiki_toolbar_heading_2: Rubrik 2
+  label_wiki_toolbar_heading_3: Rubrik 3
+  label_wiki_toolbar_unordered_list: Osorterad lista
+  label_wiki_toolbar_ordered_list: Sorterad lista
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Citat
+  label_wiki_toolbar_unquote: Ta bort citat
+  label_wiki_toolbar_table: Tabell
+  label_wiki_toolbar_preformatted_text: Förformaterad text
+  label_wiki_toolbar_preformatted_code: Färgmarkerad kod
+  label_wiki_toolbar_wiki_link: Länk till en wikisida
+  label_wiki_toolbar_image: Bild
+  label_wiki_toolbar_help: Help

@@ -1634,3 +1634,22 @@ ru:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Жирный
+  label_wiki_toolbar_italic: Курсив
+  label_wiki_toolbar_underline: Подчеркнутый
+  label_wiki_toolbar_deleted: Зачеркнутый
+  label_wiki_toolbar_code: Вставка кода
+  label_wiki_toolbar_heading_1: Заголовок 1
+  label_wiki_toolbar_heading_2: Заголовок 2
+  label_wiki_toolbar_heading_3: Заголовок 3
+  label_wiki_toolbar_unordered_list: Маркированный список
+  label_wiki_toolbar_ordered_list: Нумерованный список
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Цитата
+  label_wiki_toolbar_unquote: Удалить цитату
+  label_wiki_toolbar_table: Таблица
+  label_wiki_toolbar_preformatted_text: Заранее форматированный текст
+  label_wiki_toolbar_preformatted_code: Подсветка кода
+  label_wiki_toolbar_wiki_link: Ссылка на страницу в Wiki
+  label_wiki_toolbar_image: Вставка изображения
+  label_wiki_toolbar_help: Help

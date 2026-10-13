@@ -1592,3 +1592,22 @@ da:
   mail_subject_test_email: Redmine test
   mail_body_test_email: This is a test email sent by Redmine.
   text_mermaid_available: Mermaid.js available (optional)
+  label_wiki_toolbar_strong: Fed
+  label_wiki_toolbar_italic: Kursiv
+  label_wiki_toolbar_underline: Understreget
+  label_wiki_toolbar_deleted: Slettet
+  label_wiki_toolbar_code: Inline-kode
+  label_wiki_toolbar_heading_1: Overskrift 1
+  label_wiki_toolbar_heading_2: Overskrift 2
+  label_wiki_toolbar_heading_3: Overskrift 3
+  label_wiki_toolbar_unordered_list: Unummereret liste
+  label_wiki_toolbar_ordered_list: Nummereret liste
+  label_wiki_toolbar_task_list: Task list
+  label_wiki_toolbar_quote: Citér
+  label_wiki_toolbar_unquote: Fjern citér
+  label_wiki_toolbar_table: Table
+  label_wiki_toolbar_preformatted_text: Præformateret tekst
+  label_wiki_toolbar_preformatted_code: Highlighted code
+  label_wiki_toolbar_wiki_link: Link til en wiki-side
+  label_wiki_toolbar_image: Billede
+  label_wiki_toolbar_help: Help
