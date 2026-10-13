@@ -21,80 +21,44 @@ module Redmine
   module WikiFormatting
     module CommonMark
       module Helper
-        def wikitoolbar(field_id: nil, preview_url: preview_text_path, auto_complete: true, list_autofill: true, &)
-          @wikitoolbar ||= WikiToolbar.new(self)
-          @wikitoolbar.render(field_id: field_id, preview_url: preview_url, auto_complete: auto_complete, list_autofill: list_autofill, &)
-        end
+        include Redmine::WikiToolbar::Helper
 
-        def wikitoolbar_for(field_id, preview_url = preview_text_path)
-          heads_for_wiki_formatter
-
-          javascript_tag(
-            "var wikiToolbar = new jsToolBar(document.getElementById('#{field_id}')); " \
-            "wikiToolbar.setHelpLink('#{escape_javascript help_wiki_syntax_path}'); " \
-            "wikiToolbar.setPreviewUrl('#{escape_javascript preview_url}'); " \
-            "wikiToolbar.draw();"
-          )
+        def wiki_toolbar
+          @wiki_toolbar ||= WikiToolbar.new(self)
         end
 
         def initial_page_content(page)
           "# #{page.pretty_title}"
         end
-
-        def heads_for_wiki_formatter
-          unless @heads_for_wiki_formatter_included
-            toolbar_language_options = User.current && User.current.pref.toolbar_language_options
-            lang =
-              if toolbar_language_options.nil?
-                UserPreference::DEFAULT_TOOLBAR_LANGUAGE_OPTIONS
-              else
-                toolbar_language_options.split(',')
-              end
-            content_for :header_tags do
-              javascript_include_tag('jstoolbar/jstoolbar') +
-              javascript_include_tag('jstoolbar/common_mark') +
-              javascript_include_tag("jstoolbar/lang/jstoolbar-#{current_language.to_s.downcase}") +
-              javascript_tag(
-                "var wikiImageMimeTypes = #{Redmine::MimeType.by_type('image').to_json};" \
-                  "var userHlLanguages = #{lang.to_json};"
-              ) +
-              stylesheet_link_tag('jstoolbar')
-            end
-            @heads_for_wiki_formatter_included = true
-          end
-        end
       end
 
       class WikiToolbar < Redmine::WikiToolbar
-        def controller_name
-          'common-mark-toolbar'
-        end
-
         def buttons
           [
-            { label: :label_wiki_toolbar_strong, class: 'jstb_strong', icon: 'bold', action: 'strong', shortcut: 'b' },
-            { label: :label_wiki_toolbar_italic, class: 'jstb_em', icon: 'italic', action: 'italic', shortcut: 'i' },
-            { label: :label_wiki_toolbar_underline, class: 'jstb_ins', icon: 'underline', action: 'underline', shortcut: 'u' },
-            { label: :label_wiki_toolbar_deleted, class: 'jstb_del', icon: 'strikethrough', action: 'deleted' },
-            { label: :label_wiki_toolbar_code, class: 'jstb_code', icon: 'inline-code', action: 'inlineCode' },
-            { class: 'jstSpacer' },
-            { label: :label_wiki_toolbar_heading_1, class: 'jstb_h1', icon: 'h1', action: 'h1' },
-            { label: :label_wiki_toolbar_heading_2, class: 'jstb_h2', icon: 'h2', action: 'h2' },
-            { label: :label_wiki_toolbar_heading_3, class: 'jstb_h3', icon: 'h3', action: 'h3' },
-            { class: 'jstSpacer' },
-            { label: :label_wiki_toolbar_unordered_list, class: 'jstb_ul', icon: 'list', action: 'unorderedList' },
-            { label: :label_wiki_toolbar_ordered_list, class: 'jstb_ol', icon: 'list-numbers', action: 'orderedList' },
-            { label: :label_wiki_toolbar_task_list, class: 'jstb_tl', icon: 'list-check', action: 'taskList' },
-            { class: 'jstSpacer' },
-            { label: :label_wiki_toolbar_quote, class: 'jstb_bq', icon: 'indent-increase', action: 'quote' },
-            { label: :label_wiki_toolbar_unquote, class: 'jstb_unbq', icon: 'indent-decrease', action: 'unquote' },
-            { label: :label_wiki_toolbar_table, class: 'jstb_table', icon: 'table', action: 'table' },
-            { label: :label_wiki_toolbar_preformatted_text, class: 'jstb_pre', icon: 'pre', action: 'pre' },
-            { label: :label_wiki_toolbar_preformatted_code, class: 'jstb_precode', icon: 'changeset', action: 'precode' },
-            { label: :label_wiki_toolbar_wiki_link, class: 'jstb_wiki_link', icon: 'wiki-link', action: 'wikiLink' },
-            { label: :label_wiki_toolbar_image, class: 'jstb_image', icon: 'image', action: 'image' },
-            { class: 'spacer' },
-            { label: :label_wiki_toolbar_help, class: 'jstb_help', icon: 'help', action: 'help' }
+            {name: 'strong', action: 'wrap', prefix: '**', shortcut: 'b'},
+            {name: 'em', action: 'wrap', prefix: '*', shortcut: 'i'},
+            {name: 'ins', action: 'wrap', prefix: '<u>', suffix: '</u>', shortcut: 'u'},
+            {name: 'del', action: 'wrap', prefix: '~~'},
+            {name: 'code', action: 'wrap', prefix: '`'},
+            SPACER,
+            {name: 'h1', action: 'wrapLines', prefix: '# ', strip: '^#+\s+'},
+            {name: 'h2', action: 'wrapLines', prefix: '## ', strip: '^#+\s+'},
+            {name: 'h3', action: 'wrapLines', prefix: '### ', strip: '^#+\s+'},
+            SPACER,
+            {name: 'ul', action: 'wrapLines', pattern: '[#-]?\s*', replacement: '* '},
+            {name: 'ol', action: 'wrapLines', pattern: '[*-]?\s*', replacement: '1. '},
+            {name: 'tl', action: 'wrapLines', pattern: '[*-]?\s*', replacement: '* [ ] '},
+            SPACER,
+            {name: 'bq', action: 'wrapLines', pattern: '( *)([^\n]*)', replacement: '> $2$3'},
+            {name: 'unbq', action: 'wrapLines', pattern: ' *(> ?)?( *)([^\n]*)', replacement: '$3$4'},
+            {name: 'table', menu: :table, header_cell: '%{name} ', separator_cell: '--'},
+            {name: 'pre', action: 'wrapLines', prefix: "```\n", suffix: "\n```"},
+            {name: 'precode', menu: :precode, prefix: "``` %{lang}\n", suffix: "\n```\n"},
+            SPACER,
+            {name: 'link', action: 'wrap', prefix: '[[', suffix: ']]'},
+            {name: 'img', action: 'wrap', prefix: '![](', suffix: ')'},
+            SPACER,
+            {name: 'help', action: 'help'}
           ]
         end
       end

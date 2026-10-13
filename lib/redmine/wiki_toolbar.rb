@@ -1,4 +1,4 @@
-#attributes frozen_string_literal: true
+# frozen_string_literal: true
 
 # Redmine - project management software
 # Copyright (C) 2006-  Jean-Philippe Lang
@@ -18,117 +18,219 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 module Redmine
+  # Renders the wiki toolbar handled by the wiki-toolbar Stimulus controller.
+  #
+  # Text formatters subclass it and describe their buttons in #buttons. Each
+  # button is a Hash with:
+  # * :name - the button name, used for the "jstb_<name>" CSS class
+  # * :action - the controller action: wrap, wrapLines or help
+  # * :menu - :precode or :table, opens a menu instead of running an action
+  # * :shortcut - optional key used with Ctrl (Cmd on macOS)
+  # * any other key is passed to the action as a Stimulus action parameter
+  #
+  # Use SPACER to separate groups of buttons.
   class WikiToolbar
-    extend Forwardable
-    def_delegators :@view_context, :tag, :concat, :help_wiki_syntax_path, :l, :safe_join, :sprite_icon, :modifier_key, :modifier
+    SPACER = :spacer
 
-    def initialize(view_context)
-      @view_context = view_context
+    LABELS = {
+      'strong' => :label_wiki_toolbar_strong,
+      'em' => :label_wiki_toolbar_italic,
+      'ins' => :label_wiki_toolbar_underline,
+      'del' => :label_wiki_toolbar_deleted,
+      'code' => :label_wiki_toolbar_code,
+      'h1' => :label_wiki_toolbar_heading_1,
+      'h2' => :label_wiki_toolbar_heading_2,
+      'h3' => :label_wiki_toolbar_heading_3,
+      'ul' => :label_wiki_toolbar_unordered_list,
+      'ol' => :label_wiki_toolbar_ordered_list,
+      'tl' => :label_wiki_toolbar_task_list,
+      'bq' => :label_wiki_toolbar_quote,
+      'unbq' => :label_wiki_toolbar_unquote,
+      'table' => :label_wiki_toolbar_table,
+      'pre' => :label_wiki_toolbar_preformatted_text,
+      'precode' => :label_wiki_toolbar_preformatted_code,
+      'link' => :label_wiki_toolbar_wiki_link,
+      'img' => :label_wiki_toolbar_image,
+      'help' => :label_wiki_toolbar_help
+    }.freeze
+
+    BUTTON_KEYS = [:name, :action, :menu, :shortcut, :label].freeze
+    # Button options used to render the menu instead of being action parameters
+    MENU_KEYS = {precode: [:prefix, :suffix]}.freeze
+    TABLE_MENU_ROWS = 5
+    TABLE_MENU_COLS = 10
+
+    # Helper methods shared by the text formatters that use the toolbar
+    module Helper
+      def wikitoolbar_for(field_id, preview_url = preview_text_path)
+        heads_for_wiki_formatter
+        wiki_toolbar.render(field_id, preview_url)
+      end
+
+      def heads_for_wiki_formatter
+        return if @heads_for_wiki_formatter_included
+
+        content_for :header_tags do
+          javascript_tag("var wikiImageMimeTypes = #{Redmine::MimeType.by_type('image').to_json};")
+        end
+        @heads_for_wiki_formatter_included = true
+      end
     end
 
-    def controller_name
+    def initialize(view)
+      @view = view
     end
 
     def buttons
+      []
     end
 
-    def render(field_id:, preview_url:, auto_complete:, list_autofill:)
-      tag.div(class: 'wiki-editor',
+    def render(field_id, preview_url)
+      tag.div(class: 'jstBlock', hidden: true,
               data: {
-                controller: controller_name,
-                field_id: field_id,
-                "#{controller_name}-preview-url-value": preview_url,
-                "#{controller_name}-help-url-value": help_wiki_syntax_path,
-                "#{controller_name}-languages-value": current_language
+                controller: 'wiki-toolbar',
+                action: keyboard_actions,
+                wiki_toolbar_field_id_value: field_id,
+                wiki_toolbar_preview_url_value: preview_url,
+                wiki_toolbar_help_url_value: @view.help_wiki_syntax_path
               }) do
-        concat(
-          tag.div(class: 'wiki-editor-header') do
-            concat(
-              tag.div(class: 'wiki-editor-tabs') do
-                concat tag.button(l(:button_edit), type: 'button', class: 'wiki-editor-tab selected', data: { action: "#{controller_name}#edit", "#{controller_name}-target": "editTab" })
-                concat tag.button(l(:label_preview), type: 'button', class: 'wiki-editor-tab', data: { action: "#{controller_name}#preview", "#{controller_name}-target": "previewTab" })
-              end
-            )
-            concat(
-              tag.div(class: 'wiki-editor-buttons', data: { "#{controller_name}-target": "buttons" }) do
-                render_buttons
-              end
-            )
-          end
-        )
-
-        concat(
-          tag.div(class: 'wiki-editor-pane wiki-editor-edit', data: { "#{controller_name}-target": "editPane" }) do
-            yield(attributes(field_id, auto_complete, list_autofill))
-          end
-        )
-
-        concat(
-          tag.div(class: 'wiki-editor-pane wiki-editor-preview wiki hidden', data: { "#{controller_name}-target": "previewPane" })
-        )
+        tabs +
+          tag.div(class: 'jstEditor', data: {wiki_toolbar_target: 'editor'}) do
+            tag.div('', class: 'wiki wiki-preview hidden', id: "preview_#{field_id}",
+                    data: {wiki_toolbar_target: 'preview'})
+          end +
+          menus
       end
     end
 
     private
 
-    def attributes(field_id, auto_complete, list_autofill)
-      controllers = []
-      actions = ["keydown.#{modifier}+b->#{controller_name}#strong:prevent",
-                 "keydown.#{modifier}+i->#{controller_name}#italic:prevent",
-                 "keydown.#{modifier}+u->#{controller_name}#underline:prevent",
-                 "keydown.#{modifier}+shift+p@window->#{controller_name}#togglePreview:prevent",
-                 "keydown.#{modifier}+shift+p->#{controller_name}#preview:prevent"]
-      data = {}
-      if field_id.nil?
-        data["#{controller_name}_target"] = 'field'
-      end
-
-      if auto_complete
-        data[:auto_complete] = true
-      end
-
-      if Setting.text_formatting.present? && list_autofill
-        controllers << 'list-autofill'
-        actions << 'beforeinput->list-autofill#handleBeforeInput'
-        data[:list_autofill_text_formatting_param] = Setting.text_formatting
-      end
-      data.merge!({controller: controllers.join(' '), action: actions.join(' ')})
+    def tag
+      @view.tag
     end
 
-    def render_buttons
-      @rendered_buttons ||= safe_join(
-        buttons.map do |button|
-          if button[:class] == 'jstSpacer' || button[:class] == 'spacer'
-            tag.span(class: 'jstSpacer')
-          else
-            title = l(button[:label])
-            title += " (#{modifier_key}+#{button[:shortcut].upcase})" if button[:shortcut]
-
-            tag.button(
-              button_content(button, title),
-              type: 'button',
-              class: button[:class],
-              title: title,
-              data: { action: "#{controller_name}##{button[:action]}" }
-            )
-          end
-        end)
+    def l(...)
+      @view.l(...)
     end
 
-    def button_content(button, title)
-      if button[:icon] == 'pre'
-        tag.svg(class: 's16 icon-svg', aria: { hidden: true }, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', 'stroke-width': '2', 'stroke-linecap': 'round',
-                'stroke-linejoin': 'round') do
-          concat tag.rect(x: '3', y: '5', width: '18', height: '14', rx: '2')
-          concat tag.text('pre', x: '12', y: '15', 'text-anchor': 'middle', style: 'font-size: 8px; font-weight: bold; font-family: monospace;', fill: 'currentColor', stroke: 'none')
+    def tabs
+      tag.div(class: 'jstTabs tabs') do
+        tag.ul(role: 'tablist') do
+          tag.li {tab(l(:button_edit), 'edit', true)} +
+            tag.li {tab(l(:label_preview), 'preview', false)} +
+            tag.li(class: 'tab-elements') do
+              tag.div(rendered_buttons, class: 'jstElements', data: {wiki_toolbar_target: 'toolbar'})
+            end
         end
-      else
-        sprite_icon(button[:icon], title, icon_only: true, size: 16)
       end
     end
 
-    def current_language
-      @current_language ||= (User.current && User.current.pref.toolbar_language_options || UserPreference::DEFAULT_TOOLBAR_LANGUAGE_OPTIONS).split(',')
+    def tab(text, name, selected)
+      tag.a(text, href: '#', class: ['tab-' + name, {selected: selected}], role: 'tab',
+            aria: {selected: selected},
+            data: {wiki_toolbar_target: "#{name}Tab", action: "wiki-toolbar##{name}:prevent"})
+    end
+
+    def rendered_buttons
+      @rendered_buttons ||= @view.safe_join(buttons.map {|button| render_button(button)})
+    end
+
+    def render_button(button)
+      return tag.span(" ", class: 'jstSpacer') if button == SPACER
+
+      name = button[:name]
+      title = l(button[:label] || LABELS.fetch(name))
+      data = button_params(button)
+      if button[:menu]
+        data[:action] = 'wiki-toolbar#toggleMenu'
+        data[:wiki_toolbar_menu_param] = button[:menu]
+      else
+        data[:action] = "wiki-toolbar##{button[:action]}"
+      end
+      data[:wiki_toolbar_shortcut] = button[:shortcut] if button[:shortcut]
+
+      tag.button(tag.span(title), type: 'button', class: "jstb_#{name}", title: title, tabindex: 200, data: data)
+    end
+
+    # Converts the button options to Stimulus action parameters
+    def button_params(button)
+      button.except(*BUTTON_KEYS, *MENU_KEYS[button[:menu]]).transform_keys {|key| :"wiki_toolbar_#{key}_param"}
+    end
+
+    def menus
+      @menus ||= begin
+        templates = buttons.filter_map do |button|
+          next unless button.is_a?(Hash) && button[:menu]
+
+          tag.template(data: {wiki_toolbar_target: "#{button[:menu]}Menu"}) do
+            send(:"#{button[:menu]}_menu", button)
+          end
+        end
+        @view.safe_join(templates)
+      end
+    end
+
+    # Lists the languages for code highlighting. Each item wraps the selected
+    # lines using the :prefix and :suffix of the button, where %{lang} is
+    # replaced by the language.
+    def precode_menu(button)
+      tag.ul(class: 'jstMenu', role: 'menu',
+             data: {action: 'click->wiki-toolbar#closeMenu keydown.esc->wiki-toolbar#closeMenu'}) do
+        @view.safe_join(
+          code_languages.map do |lang|
+            tag.li(role: 'none') do
+              tag.button(lang, type: 'button', role: 'menuitem',
+                         data: {
+                           action: 'wiki-toolbar#wrapLines',
+                           wiki_toolbar_prefix_param: format(button[:prefix], lang: lang),
+                           wiki_toolbar_suffix_param: format(button[:suffix], lang: lang)
+                         })
+            end
+          end
+        )
+      end
+    end
+
+    def table_menu(_button)
+      tag.table(class: 'table-generator', role: 'grid',
+                data: {
+                  action: 'click->wiki-toolbar#closeMenu keydown.esc->wiki-toolbar#closeMenu ' \
+                          'mouseover->wiki-toolbar#highlightTable focusin->wiki-toolbar#highlightTable'
+                }) do
+        @view.safe_join(
+          (1..TABLE_MENU_ROWS).map do |row|
+            tag.tr do
+              @view.safe_join(
+                (1..TABLE_MENU_COLS).map do |col|
+                  tag.td do
+                    tag.button(type: 'button', title: "#{col}×#{row}", aria: {label: "#{col}×#{row}"},
+                               data: {
+                                 action: 'wiki-toolbar#insertTable',
+                                 wiki_toolbar_cols_param: col,
+                                 wiki_toolbar_rows_param: row
+                               })
+                  end
+                end
+              )
+            end
+          end
+        )
+      end
+    end
+
+    def code_languages
+      User.current.pref.toolbar_language_options.to_s.split(',')
+    end
+
+    def keyboard_actions
+      @keyboard_actions ||= begin
+        keys = buttons.filter_map {|button| button[:shortcut] if button.is_a?(Hash)}
+        actions = keys.flat_map do |key|
+          %w[ctrl meta].map {|modifier| "keydown.#{modifier}+#{key}->wiki-toolbar#shortcut"}
+        end
+        actions += %w[ctrl meta].map {|modifier| "keydown.#{modifier}+shift+p@window->wiki-toolbar#togglePreview"}
+        actions.join(' ')
+      end
     end
   end
 end

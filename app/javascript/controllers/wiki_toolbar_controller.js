@@ -1,367 +1,279 @@
-import { Controller } from "@hotwired/stimulus"
-import { post } from "@rails/request.js"
+/**
+ * Redmine - project management software
+ * Copyright (C) 2006-  Jean-Philippe Lang
+ * This code is released under the GNU General Public License.
+ */
+import { Controller } from '@hotwired/stimulus'
 
+const isMac = /mac|iphone|ipad/i.test(navigator.userAgentData?.platform || navigator.platform)
+
+// Wiki toolbar rendered by Redmine::WikiToolbar.
+//
+// The toolbar is rendered after the textarea and moves itself to the
+// textarea's position on connect, so that existing views only need to call
+// wikitoolbar_for. The text formatting syntax is given by the button
+// parameters, so this controller is shared by all text formatters.
 export default class extends Controller {
-
-  static targets = ["field", "previewPane", "editPane", "editTab", "previewTab", "buttons"]
+  static targets = ['editor', 'preview', 'editTab', 'previewTab', 'toolbar', 'precodeMenu', 'tableMenu']
   static values = {
-    languages: Array,
+    fieldId: String,
     previewUrl: String,
     helpUrl: String
   }
 
-  static lastPreviewed = null;
+  // Editor whose preview was displayed last, switched back to edit mode
+  // using the Ctrl/Cmd+Shift+P shortcut from outside of the textareas
+  static lastPreviewed = null
 
   connect() {
-    this.field = this.hasFieldTarget ? this.fieldTarget : document.getElementById(this.element.dataset.fieldId)
+    this.field = document.getElementById(this.fieldIdValue)
     if (!this.field) return
+
+    if (!this.editorTarget.contains(this.field)) {
+      // Moving the element reconnects the controller
+      this.field.before(this.element)
+      this.editorTarget.prepend(this.field)
+    }
+    this.addShortcutsToTitles()
+    this.element.hidden = false
   }
 
-  strong() {
-    // abstract
+  disconnect() {
+    this.closeMenu()
+    if (this.constructor.lastPreviewed === this) this.constructor.lastPreviewed = null
   }
 
-  italic() {
-    // abstract
+  // Actions
+
+  wrap({ params: { prefix, suffix } }) {
+    this.encloseSelection(String(prefix), String(suffix ?? prefix))
   }
 
-  underline() {
-    // abstract
-  }
-
-  deleted() {
-    // abstract
-  }
-
-  inlineCode() {
-    // abstract
-  }
-
-  h1() {
-    // abstract
-  }
-
-  h2() {
-    // abstract
-  }
-
-  h3() {
-    // abstract
-  }
-
-  unorderedList() {
-    // abstract
-  }
-
-  orderedList() {
-    // abstract
-  }
-
-  quote() {
-    // abstract
-  }
-
-  unquote() {
-    // abstract
-  }
-
-  pre() {
-    // abstract
+  wrapLines({ params: { prefix = '', suffix = '', strip, pattern, replacement = '' } }) {
+    this.encloseLineSelection(String(prefix), String(suffix), (str) => {
+      if (strip) {
+        str = str.replace(new RegExp(strip), '')
+      }
+      if (pattern) {
+        str = str.replace(/\r/g, '').replace(new RegExp(`(\\n|^)${pattern}`, 'g'), `$1${replacement}`)
+      }
+      return str
+    })
   }
 
   help() {
-    window.open(this.helpUrlValue, "_blank")
+    window.open(this.helpUrlValue, '', 'resizable=yes, location=no, width=300, height=640, menubar=no, status=no, scrollbars=yes')
   }
 
-  precode(event) {
-    event.preventDefault()
-    this.precodeMenu(event.currentTarget)
+  shortcut(event) {
+    if (event.target !== this.field || !(isMac ? event.metaKey : event.ctrlKey)) return
+
+    const button = this.toolbarTarget.querySelector(`[data-wiki-toolbar-shortcut="${event.key.toLowerCase()}"]`)
+    if (button) {
+      event.preventDefault()
+      button.click()
+    }
   }
 
-  table(event) {
-    event.preventDefault()
-    this.tableMenu(event.currentTarget)
-  }
+  // Preview
 
-  wikiLink() {
-    this.encloseSelection("[[", "]]")
-  }
+  edit() {
+    if (!this.previewing) return
 
-  image() {
-    // abstract
-  }
-
-  // Common text manipulation methods
-  singleTag(startTag, endTag) {
-    endTag = endTag || startTag
-    this.encloseSelection(startTag, endTag)
-  }
-
-  encloseSelection(prefix, suffix, fn) {
+    this.previewRequest = null
+    this.previewTarget.classList.add('hidden')
+    this.field.classList.remove('hidden')
+    this.toolbarTarget.classList.remove('hidden')
+    this.selectTab(this.editTabTarget, this.previewTabTarget)
     this.field.focus()
-    prefix = prefix || ''
-    suffix = suffix || ''
-
-    let start = this.field.selectionStart
-    let end = this.field.selectionEnd
-    let scrollPos = this.field.scrollTop
-    let sel = this.field.value.substring(start, end)
-    let subst
-
-    if (start > 0 && this.field.value.charAt(start - 1).match(/\S/)) {
-      prefix = ' ' + prefix
-    }
-    if (this.field.value.charAt(end).match(/\S/)) {
-      suffix = suffix + ' '
-    }
-
-    if (sel.match(/ $/)) {
-      sel = sel.substring(0, sel.length - 1)
-      suffix = suffix + " "
-    }
-
-    let res = (typeof fn === 'function') ? ((sel) ? fn.call(this, sel) : fn('')) : (sel ? sel : '')
-    subst = prefix + res + suffix
-
-    this.field.setRangeText(subst, start, end, 'select')
-    this.field.selectionStart = start + prefix.length
-    this.field.selectionEnd = start + prefix.length + res.length
-    this.field.scrollTop = scrollPos
   }
 
-  encloseLineSelection(prefix, suffix, fn) {
-    this.field.focus()
-    prefix = prefix || ''
-    suffix = suffix || ''
+  async preview() {
+    if (this.previewing) return
 
-    let start = this.field.selectionStart
-    let end = this.field.selectionEnd
-    let scrollPos = this.field.scrollTop
+    this.constructor.lastPreviewed = this
+    this.previewTarget.style.minHeight = `${this.field.clientHeight}px`
+    this.field.classList.add('hidden')
+    this.toolbarTarget.classList.add('hidden')
+    this.previewTarget.classList.remove('hidden')
+    this.selectTab(this.previewTabTarget, this.editTabTarget)
+    this.closeMenu()
 
-    // Go to start of line
-    while (start > 0 && this.field.value.charAt(start - 1) !== '\n' && this.field.value.charAt(start - 1) !== '\r') {
-      start--
+    const request = this.previewRequest = this.fetchPreview()
+    const html = await request
+    if (request === this.previewRequest && html !== null) {
+      this.previewTarget.innerHTML = html
     }
-
-    // Go to end of line
-    while (end < this.field.value.length && this.field.value.charAt(end) !== '\n' && this.field.value.charAt(end) !== '\r') {
-      end++
-    }
-
-    let sel = this.field.value.substring(start, end)
-    if (sel.match(/ $/)) {
-      sel = sel.substring(0, sel.length - 1)
-      suffix = suffix + " "
-    }
-
-    let res = (typeof fn === 'function') ? ((sel) ? fn.call(this, sel) : fn('')) : (sel ? sel : '')
-    let subst = prefix + res + suffix
-
-    this.field.setRangeText(subst, start, end, 'select')
-    this.field.selectionStart = start + prefix.length
-    this.field.selectionEnd = start + prefix.length + res.length
-    this.field.scrollTop = scrollPos
-  }
-
-  async preview(event) {
-    event.preventDefault()
-    const previewTab = event.currentTarget
-    if (previewTab.classList.contains('selected')) return
-
-    const formData = new FormData()
-    formData.append('text', this.field.value)
-    const form = this.field.closest('form')
-    const attachmentInputs = form.querySelectorAll('.attachments_fields input');
-
-    attachmentInputs.forEach(input => {
-      if (input.name && input.value) {
-        formData.append(input.name, input.value);
-      }
-    });
-
-    try {
-      const response = await post(this.previewUrlValue, {
-        body: formData
-      })
-      if (response.ok) {
-        const html = await response.text
-        this.showPreview(html)
-      }
-    } catch (error) {
-      console.error("Preview failed", error)
-    }
-  }
-
-  edit(event) {
-    event.preventDefault()
-    const editTab = event.currentTarget
-    if (editTab.classList.contains('selected')) return
-
-    this.hidePreview(editTab)
   }
 
   togglePreview(event) {
-    if (this.constructor.lastPreviewed !== null) {
-      this.constructor.lastPreviewed.hidePreview()
+    if (event.target === this.field) {
+      event.preventDefault()
+      this.preview()
+    } else if (this.constructor.lastPreviewed === this && !event.target.closest?.('.jstEditor')) {
+      event.preventDefault()
       this.constructor.lastPreviewed = null
+      this.edit()
     }
   }
 
-  showPreview(html) {
-    // Find or create preview div
-    this.previewPaneTarget.innerHTML = html
-    this.editPaneTarget.classList.add('hidden')
-    this.previewPaneTarget.classList.remove('hidden')
-    this.editTabTarget.classList.remove('selected')
-    this.previewTabTarget.classList.add('selected')
-    this.buttonsTarget.classList.add('hidden')
-    this.constructor.lastPreviewed = this;
+  // Menus
+
+  toggleMenu({ currentTarget, params }) {
+    const opened = this.menu?.dataset.name === params.menu
+    this.closeMenu()
+    if (opened) return
+
+    const template = this[`${params.menu}MenuTarget`]
+    this.menu = template.content.firstElementChild.cloneNode(true)
+    this.menu.dataset.name = params.menu
+    this.menuParams = params
+    this.element.append(this.menu)
+    this.positionMenu(currentTarget)
+
+    this.closeMenuOnOutsideClick = (event) => {
+      if (!this.menu.contains(event.target) && !currentTarget.contains(event.target)) this.closeMenu()
+    }
+    document.addEventListener('mousedown', this.closeMenuOnOutsideClick)
+    this.menu.querySelector('button')?.focus()
   }
 
-  hidePreview(editTab) {
-    this.editPaneTarget.classList.remove('hidden')
-    this.previewPaneTarget.classList.add('hidden')
-    this.editTabTarget.classList.add('selected')
-    this.previewTabTarget.classList.remove('selected')
-    this.buttonsTarget.classList.remove('hidden')
+  closeMenu() {
+    if (!this.menu) return
+
+    document.removeEventListener('mousedown', this.closeMenuOnOutsideClick)
+    this.menu.remove()
+    this.menu = null
+    this.closeMenuOnOutsideClick = null
   }
 
-  tableMenu(button) {
-    if (this.menu) {
-      this.menu.remove()
-      this.menu = null
-      return
-    }
+  insertTable({ params: { cols, rows } }) {
+    const { headerCell, separatorCell } = this.menuParams
+    const names = 'ABCDEFGHIJ'.slice(0, cols).split('')
+    const line = (cells) => `|${cells.join('|')}|\n`
 
-    const alphabets = "ABCDEFGHIJ".split('')
-    const menu = document.createElement('table')
-    menu.className = 'table-generator'
-    this.menu = menu
-
-    for (let r = 1; r <= 5; r++) {
-      const row = document.createElement('tr')
-      for (let c = 1; c <= 10; c++) {
-        const cell = document.createElement('td')
-        cell.dataset.row = r
-        cell.dataset.col = c
-        cell.title = `${c}×${r}`
-
-        cell.addEventListener('mousedown', (e) => {
-          e.preventDefault()
-          this.insertTable(c, r)
-          this.menu.remove()
-          this.menu = null
-        })
-
-        cell.addEventListener('mouseenter', () => {
-          const cells = menu.querySelectorAll('td')
-          cells.forEach(el => {
-            if (parseInt(el.dataset.row) <= r && parseInt(el.dataset.col) <= c) {
-              el.classList.add('selected-cell')
-            } else {
-              el.classList.remove('selected-cell')
-            }
-          })
-        })
-
-        row.appendChild(cell)
-      }
-      menu.appendChild(row)
-    }
-
-    document.body.appendChild(menu)
-
-    // Positioning
-    const rect = button.getBoundingClientRect()
-    menu.style.left = `${rect.left + window.scrollX}px`
-    menu.style.top = `${rect.bottom + window.scrollY}px`
-
-    const closeMenu = (e) => {
-      if (this.menu && !this.menu.contains(e.target) && e.target !== button && !button.contains(e.target)) {
-        this.menu.remove()
-        this.menu = null
-        document.removeEventListener('mousedown', closeMenu)
-      }
-    }
-    document.addEventListener('mousedown', closeMenu)
+    let table = line(names.map((name) => String(headerCell).replace('%{name}', name)))
+    if (separatorCell) table += line(Array(cols).fill(separatorCell))
+    table += line(Array(cols).fill('  ')).repeat(rows)
+    this.encloseLineSelection(table, '')
   }
 
-  insertTable(cols, rows) {
-    // abstract
+  highlightTable({ target }) {
+    const button = target.closest('button')
+    if (!button) return
+
+    const { wikiToolbarColsParam: cols, wikiToolbarRowsParam: rows } = button.dataset
+    this.menu.querySelectorAll('button').forEach((cell) => {
+      const selected = Number(cell.dataset.wikiToolbarColsParam) <= Number(cols) &&
+        Number(cell.dataset.wikiToolbarRowsParam) <= Number(rows)
+      cell.parentElement.classList.toggle('selected-cell', selected)
+    })
   }
 
-  precodeMenu(button) {
-    if (this.menu) {
-      this.menu.remove()
-      this.menu = null
-      return
-    }
+  // Private
 
-    const menu = document.createElement('ul')
-    menu.className = 'drdn-items'
-    menu.style.position = 'absolute'
-    menu.style.zIndex = '1000'
-    menu.style.backgroundColor = '#fff'
-    menu.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)'
-    menu.style.border = '1px solid #d7d7d7'
-    menu.style.listStyle = 'none'
-    menu.style.padding = '5px 0'
-    menu.style.margin = '0'
-    menu.style.minWidth = '150px'
-    menu.style.maxHeight = '300px'
-    menu.style.overflowY = 'auto'
+  get previewing() {
+    return this.previewTabTarget.classList.contains('selected')
+  }
 
-    this.menu = menu
+  selectTab(selected, unselected) {
+    selected.classList.add('selected')
+    selected.setAttribute('aria-selected', 'true')
+    unselected.classList.remove('selected')
+    unselected.setAttribute('aria-selected', 'false')
+  }
 
-    this.languagesValue.forEach(lang => {
-      const item = document.createElement('li')
-      const link = document.createElement('a')
-      link.href = '#'
-      link.textContent = lang
-      link.style.display = 'block'
-      link.style.padding = '4px 12px'
-      link.style.color = '#333'
-      link.style.textDecoration = 'none'
-      link.style.fontSize = '0.9em'
-
-      link.addEventListener('mouseenter', () => {
-        link.style.backgroundColor = '#3e70ad'
-        link.style.color = '#fff'
-      })
-      link.addEventListener('mouseleave', () => {
-        link.style.backgroundColor = 'transparent'
-        link.style.color = '#333'
-      })
-
-      link.addEventListener('mousedown', (e) => {
-        e.preventDefault()
-        this.insertPrecode(lang)
-        this.menu.remove()
-        this.menu = null
-      })
-
-      item.appendChild(link)
-      menu.appendChild(item)
+  async fetchPreview() {
+    const body = new FormData()
+    body.append('text', this.field.value)
+    this.field.form?.querySelectorAll('.attachments_fields input, [data-preview-param]').forEach((input) => {
+      if (input.name && input.value) body.append(input.name, input.value)
     })
 
-    document.body.appendChild(menu)
-
-    // Positioning
-    const rect = button.getBoundingClientRect()
-    menu.style.left = `${rect.left + window.scrollX}px`
-    menu.style.top = `${rect.bottom + window.scrollY}px`
-
-    const closeMenu = (e) => {
-      if (this.menu && !this.menu.contains(e.target) && e.target !== button && !button.contains(e.target)) {
-        this.menu.remove()
-        this.menu = null
-        document.removeEventListener('mousedown', closeMenu)
-      }
+    try {
+      const response = await fetch(this.previewUrlValue, {
+        method: 'POST',
+        body: body,
+        headers: {
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      if (response.ok) return await response.text()
+    } catch (error) {
+      console.error('Preview failed', error)
     }
-    document.addEventListener('mousedown', closeMenu)
+    return null
   }
 
-  insertPrecode(lang) {
-    // abstract
+  addShortcutsToTitles() {
+    this.toolbarTarget.querySelectorAll('[data-wiki-toolbar-shortcut]').forEach((button) => {
+      const key = button.dataset.wikiToolbarShortcut.toUpperCase()
+      button.title = `${button.textContent} (${isMac ? '⌘' : 'Ctrl+'}${key})`
+    })
+  }
+
+  positionMenu(button) {
+    const parent = this.menu.offsetParent || document.documentElement
+    const parentRect = parent.getBoundingClientRect()
+    const buttonRect = button.getBoundingClientRect()
+    this.menu.style.left = `${buttonRect.left - parentRect.left + parent.scrollLeft}px`
+    this.menu.style.top = `${buttonRect.bottom - parentRect.top + parent.scrollTop}px`
+  }
+
+  encloseSelection(prefix, suffix) {
+    const field = this.field
+    field.focus()
+
+    let start = field.selectionStart
+    let end = field.selectionEnd
+    let sel = field.value.substring(start, end)
+    const scrollPos = field.scrollTop
+
+    if (start > 0 && /\S/.test(field.value.charAt(start - 1))) prefix = ` ${prefix}`
+    if (/\S/.test(field.value.charAt(end))) suffix = `${suffix} `
+    if (sel.endsWith(' ')) {
+      // exclude ending space char, if any
+      sel = sel.slice(0, -1)
+      suffix = `${suffix} `
+    }
+
+    const subst = prefix + sel + suffix
+    const caret = sel ? start + subst.length : start + prefix.length
+    this.replaceRange(subst, start, end, caret, scrollPos)
+  }
+
+  encloseLineSelection(prefix, suffix, fn) {
+    const field = this.field
+    field.focus()
+
+    const value = field.value
+    let start = field.selectionStart
+    let end = field.selectionEnd
+    const scrollPos = field.scrollTop
+    const emptySelection = start === end
+
+    // go to the start and the end of the lines
+    start = value.substring(0, start).replace(/[^\r\n]*$/, '').length
+    end = value.length - value.substring(end).replace(/^[^\r\n]*/, '').length
+
+    let sel = value.substring(start, end)
+    if (sel.endsWith(' ')) {
+      // exclude ending space char, if any
+      sel = sel.slice(0, -1)
+      suffix = `${suffix} `
+    }
+
+    const res = fn ? fn(sel) : sel
+    const subst = prefix + res + suffix
+    const caret = (sel || (!prefix && emptySelection)) ? start + subst.length : start + prefix.length
+    this.replaceRange(subst, start, end, caret, scrollPos)
+  }
+
+  replaceRange(text, start, end, caret, scrollPos) {
+    this.field.setRangeText(text, start, end)
+    this.field.setSelectionRange(caret, caret)
+    this.field.scrollTop = scrollPos
+    this.field.dispatchEvent(new Event('input', { bubbles: true }))
   }
 }
